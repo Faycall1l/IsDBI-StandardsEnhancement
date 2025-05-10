@@ -50,10 +50,35 @@ python integrated_platform.py
 
 Open your browser and navigate to: http://localhost:5001
 
-### 7. Run Tests (Optional)
+### 7. Testing the System Workflow
+
+Test the system components with the correct parameters (requires Gemini API key):
 
 ```bash
-python test_system.py
+# Set your Gemini API key
+export GEMINI_API_KEY=your_api_key_here
+
+# Test document processing component
+python IslamicFinanceStandardsAI/test_components.py --component document --standard-id FAS4 --file ./data/standards/FAS4_Musharaka.pdf
+
+# Test the full workflow
+python IslamicFinanceStandardsAI/test_components.py --component workflow --standard-id FAS4 --file ./data/standards/FAS4_Musharaka.pdf
+```
+
+You can also test with different standards:
+
+```bash
+# Test with FAS 10 (Istisna'a)
+python IslamicFinanceStandardsAI/test_components.py --component document --standard-id FAS10 --file ./data/standards/FAS10_Istisna.pdf
+
+# Test with FAS 32 (Ijarah)
+python IslamicFinanceStandardsAI/test_components.py --component document --standard-id FAS32 --file ./data/standards/FAS32_Ijarah.pdf
+```
+
+All test results are displayed in the console output and can be redirected to files for analysis:
+
+```bash
+python IslamicFinanceStandardsAI/test_components.py --component document --standard-id FAS4 --file ./data/standards/FAS4_Musharaka.pdf > document_test_results.log
 ```
 
 ## Key Features & Demo Workflow
