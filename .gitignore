@@ -1,0 +1,82 @@
+# Environment variables
+.env
+.env.example
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+
+# Project specific
+data/uploads/*
+!data/uploads/
+!data/uploads/.gitkeep
+temp/
+*.bak
+*.backup
+
+# OS specific
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Log files
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Data files
+data/uploads/
+data/temp/
+
+# API keys and secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">User Profile</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <div class="avatar-circle bg-light d-inline-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-user fa-3x text-primary"></i>
+                    </div>
+                    <h4>{{ current_user.name }}</h4>
+                    <p class="text-muted mb-2">{{ current_user.email }}</p>
+                    <span class="badge bg-primary">{{ current_user.role.value|capitalize }}</span>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row text-center">
+                    <div class="col">
+                        <h5>{{ user_stats.comments }}</h5>
+                        <small class="text-muted">Comments</small>
+                    </div>
+                    <div class="col">
+                        <h5>{{ user_stats.votes }}</h5>
+                        <small class="text-muted">Votes</small>
+                    </div>
+                    <div class="col">
+                        <h5>{{ user_stats.suggestions }}</h5>
+                        <small class="text-muted">Suggestions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Links</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('proposals_list') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-list me-2"></i> All Proposals
+                </a>
+                <a href="{{ url_for('proposals_list') }}?status=pending" class="list-group-item list-group-item-action">
+                    <i class="fas fa-clock me-2"></i> Pending Proposals
+                </a>
+                <a href="{{ url_for('proposals_list') }}?status=approved" class="list-group-item list-group-item-action">
+                    <i class="fas fa-check me-2"></i> Approved Proposals
+                </a>
+                {% if current_user.role.value in ['admin', 'scholar'] %}
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-cog me-2"></i> Admin Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-8">
+        <!-- Recent Activity -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Your Recent Activity</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="activityFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="activityFilterDropdown">
+                        <li><a class="dropdown-item" href="#">All Activity</a></li>
+                        <li><a class="dropdown-item" href="#">Comments</a></li>
+                        <li><a class="dropdown-item" href="#">Votes</a></li>
+                        <li><a class="dropdown-item" href="#">Suggestions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                {% if user_activity %}
+                    {% for activity in user_activity %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                {% if activity.type == 'Comment' %}
+                                <i class="fas fa-comment text-primary me-2"></i> You commented on a proposal
+                                {% elif activity.type == 'Suggestion' %}
+                                <i class="fas fa-lightbulb text-warning me-2"></i> You suggested an improvement
+                                {% elif activity.type == 'Vote' %}
+                                <i class="fas fa-vote-yea text-success me-2"></i> You voted on a proposal
+                                {% endif %}
+                            </h6>
+                            <small class="text-muted">{{ activity.timestamp }}</small>
+                        </div>
+                        <p class="mb-1">
+                            {% if activity.proposal %}
+                            <a href="{{ url_for('view_proposal', proposal_id=activity.proposal.id) }}">
+                                {{ activity.proposal.title }}
+                            </a>
+                            {% else %}
+                            Unknown Proposal
+                            {% endif %}
+                        </p>
+                        <small class="text-muted">{{ activity.properties.text|truncate(100) if activity.properties.text else '' }}</small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="list-group-item">
+                        <p class="text-muted mb-0">No recent activity. Start participating by commenting or voting on proposals!</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% if user_activity %}
+            <div class="card-footer text-center">
+                <a href="#" class="btn btn-sm btn-outline-primary">View All Activity</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Top Proposals -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Top Proposals</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Standard</th>
+                            <th>Status</th>
+                            <th>Votes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if top_proposals %}
+                            {% for proposal in top_proposals %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('view_proposal', proposal_id=proposal.id) }}">
+                                        {{ proposal.properties.title }}
+                                    </a>
+                                </td>
+                                <td>{{ proposal.properties.standard_id }}</td>
+                                <td>
+                                    {% if proposal.properties.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif proposal.properties.status == 'approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                    {% elif proposal.properties.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                    {% elif proposal.properties.status == 'needs_revision' %}
+                                    <span class="badge bg-info">Needs Revision</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ proposal.properties.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-success me-2">
+                                        <i class="fas fa-arrow-up"></i> {{ proposal.votes.upvotes }}
+                                    </span>
+                                    <span class="text-danger">
+                                        <i class="fas fa-arrow-down"></i> {{ proposal.votes.downvotes }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_proposal', proposal_id=proposal.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No proposals available.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('proposals_list') }}" class="btn btn-sm btn-outline-primary">View All Proposals</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="editName" name="name" value="{{ current_user.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" value="{{ current_user.email }}" readonly>
+                        <div class="form-text">Email cannot be changed.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOrganization" class="form-label">Organization</label>
+                        <input type="text" class="form-control" id="editOrganization" name="organization" value="{{ current_user.profile.organization|default('') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editBio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="editBio" name="bio" rows="3">{{ current_user.profile.bio|default('') }}</textarea>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" name="current_password">
+                        <div class="form-text">Required to save changes.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password (Optional)</label>
+                        <input type="password" class="form-control" id="newPassword" name="new_password">
+                        <div class="form-text">Leave blank to keep current password.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle profile save
+        document.getElementById('saveProfileBtn').addEventListener('click', function() {
+            // In a real application, this would submit the form via AJAX
+            alert('Profile update functionality would be implemented here.');
+            
+            // Close the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+            modal.hide();
+        });
+    });
+</script>
+{% endblock %}

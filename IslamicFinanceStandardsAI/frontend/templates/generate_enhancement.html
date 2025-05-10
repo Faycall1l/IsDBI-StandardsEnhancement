@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Enhancement - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Generate Enhancement Proposal</h2>
+            <p class="lead">Use our AI-powered system to generate enhancement suggestions for AAOIFI standards.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Enhancement Generator</h5>
+                </div>
+                <div class="card-body">
+                    {% for category, message in get_flashed_messages(with_categories=true) %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+
+                    <form method="post" action="{{ url_for('generate_enhancement') }}" id="enhancementForm">
+                        <div class="mb-3">
+                            <label for="standard_id" class="form-label">Select Standard</label>
+                            <select class="form-select" id="standard_id" name="standard_id" required>
+                                <option value="" selected disabled>Choose a standard...</option>
+                                {% for standard in standards %}
+                                <option value="{{ standard.id }}">{{ standard.name }}: {{ standard.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="standard_text" class="form-label">Standard Text to Enhance</label>
+                            <textarea class="form-control" id="standard_text" name="standard_text" rows="6" required placeholder="Paste the specific section of the standard that you want to enhance..."></textarea>
+                            <div class="form-text">Provide the exact text from the standard that you want to enhance. For best results, include a complete paragraph or section.</div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="use_web_search" name="use_web_search" checked>
+                            <label class="form-check-label" for="use_web_search">
+                                Use web search to find relevant information
+                            </label>
+                            <div class="form-text">This will search the web for the latest information related to this standard to inform the enhancement.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="generateBtn">
+                                <i class="fas fa-magic me-2"></i> Generate Enhancement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 small">The enhancement generator uses advanced AI to analyze the standard text and suggest improvements based on best practices, industry trends, and Shariah principles. The generated enhancement will be added as a new proposal for community review.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h5 class="card-title">AI-Powered</h5>
+                    <p class="card-text">Our system uses advanced AI to analyze standards and suggest meaningful enhancements aligned with Islamic finance principles.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-3">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5 class="card-title">Web-Enhanced</h5>
+                    <p class="card-text">The system searches the web for the latest information and best practices to inform enhancement suggestions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-info mb-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5 class="card-title">Community Reviewed</h5>
+                    <p class="card-text">Generated enhancements are submitted as proposals for community review, feedback, and validation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('enhancementForm');
+        const generateBtn = document.getElementById('generateBtn');
+        
+        form.addEventListener('submit', function() {
+            // Disable button and show loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
+        });
+    });
+</script>
+{% endblock %}

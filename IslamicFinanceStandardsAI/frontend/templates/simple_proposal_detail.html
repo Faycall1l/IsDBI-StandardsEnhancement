@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}{{ proposal.title }} - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Proposal Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>{{ proposal.title }}</h2>
+            <div class="text-muted">
+                <span class="badge bg-{{ {'pending': 'warning', 'approved': 'success', 'rejected': 'danger', 'needs_revision': 'info'}[proposal.status] }}">
+                    {{ proposal.status|capitalize }}
+                </span>
+                <span class="ms-2">Proposed on {{ proposal.created_at }}</span>
+            </div>
+        </div>
+        <div class="d-flex">
+            <a href="{{ url_for('proposals_list') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Proposals
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Standard Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Standard Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ standard.name }}: {{ standard.title }}</h6>
+                </div>
+            </div>
+
+            <!-- Proposal Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Proposed Enhancement</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-header">Current Text</div>
+                                <div class="card-body">
+                                    <p>{{ proposal.current_text }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-header">Proposed Text</div>
+                                <div class="card-body">
+                                    <p>{{ proposal.proposed_text }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>Rationale</h6>
+                    <p>{{ proposal.rationale }}</p>
+                </div>
+            </div>
+
+            <!-- Validation Results -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Shariah Validation</h5>
+                </div>
+                <div class="card-body">
+                    {% if proposal.validation %}
+                        <div class="alert {{ 'alert-success' if proposal.validation.is_valid else 'alert-danger' }}">
+                            <i class="fas {{ 'fa-check-circle' if proposal.validation.is_valid else 'fa-times-circle' }} me-2"></i>
+                            {{ proposal.validation.reason }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            This proposal has not been validated yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Comments ({{ proposal.comments|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <textarea class="form-control" id="commentText" rows="3" placeholder="Add your comment..."></textarea>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="btn btn-primary" id="submitComment">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Comment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="commentsContainer">
+                        {% if proposal.comments %}
+                            {% for comment in proposal.comments %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="card-subtitle mb-2">
+                                            <span class="badge bg-secondary me-2">{{ comment.user }}</span>
+                                            {{ comment.text }}
+                                        </h6>
+                                        <small class="text-muted">{{ comment.created_at }}</small>
+                                    </div>
+                                    <p class="card-text">{{ comment.text }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-comments fa-2x mb-3"></i>
+                                <p>No comments yet. Be the first to comment!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Voting Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Vote</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-around align-items-center mb-3">
+                        <button class="btn btn-outline-success btn-lg" id="upvoteBtn">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span class="ms-2" id="upvoteCount">{{ proposal.votes_up }}</span>
+                        </button>
+                        <button class="btn btn-outline-danger btn-lg" id="downvoteBtn">
+                            <i class="fas fa-thumbs-down"></i>
+                            <span class="ms-2" id="downvoteCount">{{ proposal.votes_down }}</span>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        {% set total_votes = proposal.votes_up + proposal.votes_down %}
+                        {% set upvote_percentage = (proposal.votes_up / total_votes * 100) if total_votes > 0 else 0 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ upvote_percentage }}%" aria-valuenow="{{ upvote_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted mt-2">{{ total_votes }} total votes</small>
+                </div>
+            </div>
+
+            <!-- Suggestions Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Improvement Suggestions ({{ proposal.suggestions|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <textarea class="form-control" id="suggestionText" rows="3" placeholder="Suggest an improvement..."></textarea>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="btn btn-warning" id="submitSuggestion">
+                                <i class="fas fa-lightbulb me-2"></i> Submit Suggestion
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="suggestionsContainer">
+                        {% if proposal.suggestions %}
+                            {% for suggestion in proposal.suggestions %}
+                            <div class="card mb-3 border-warning">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="card-subtitle mb-2">
+                                            <span class="badge bg-secondary me-2">{{ suggestion.user }}</span>
+                                        </h6>
+                                        <small class="text-muted">{{ suggestion.created_at }}</small>
+                                    </div>
+                                    <p class="card-text">{{ suggestion.text }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-lightbulb fa-2x mb-3"></i>
+                                <p>No suggestions yet. Be the first to suggest an improvement!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Voting functionality
+        const upvoteBtn = document.getElementById('upvoteBtn');
+        const downvoteBtn = document.getElementById('downvoteBtn');
+        const upvoteCount = document.getElementById('upvoteCount');
+        const downvoteCount = document.getElementById('downvoteCount');
+        
+        upvoteBtn.addEventListener('click', function() {
+            fetch('{{ url_for("vote", proposal_id=proposal.id, vote_type="up") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    upvoteCount.textContent = data.votes_up;
+                    downvoteCount.textContent = data.votes_down;
+                    
+                    // Update progress bar
+                    const totalVotes = data.votes_up + data.votes_down;
+                    const upvotePercentage = totalVotes > 0 ? (data.votes_up / totalVotes * 100) : 0;
+                    document.querySelector('.progress-bar').style.width = upvotePercentage + '%';
+                    document.querySelector('.progress-bar').setAttribute('aria-valuenow', upvotePercentage);
+                    document.querySelector('small.text-muted').textContent = totalVotes + ' total votes';
+                }
+            });
+        });
+        
+        downvoteBtn.addEventListener('click', function() {
+            fetch('{{ url_for("vote", proposal_id=proposal.id, vote_type="down") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    upvoteCount.textContent = data.votes_up;
+                    downvoteCount.textContent = data.votes_down;
+                    
+                    // Update progress bar
+                    const totalVotes = data.votes_up + data.votes_down;
+                    const upvotePercentage = totalVotes > 0 ? (data.votes_up / totalVotes * 100) : 0;
+                    document.querySelector('.progress-bar').style.width = upvotePercentage + '%';
+                    document.querySelector('.progress-bar').setAttribute('aria-valuenow', upvotePercentage);
+                    document.querySelector('small.text-muted').textContent = totalVotes + ' total votes';
+                }
+            });
+        });
+        
+        // Comment functionality
+        const commentText = document.getElementById('commentText');
+        const submitComment = document.getElementById('submitComment');
+        const commentsContainer = document.getElementById('commentsContainer');
+        
+        submitComment.addEventListener('click', function() {
+            const text = commentText.value.trim();
+            if (!text) return;
+            
+            fetch('{{ url_for("add_comment", proposal_id=proposal.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear textarea
+                    commentText.value = '';
+                    
+                    // Add new comment to the container
+                    const commentCard = document.createElement('div');
+                    commentCard.className = 'card mb-3';
+                    commentCard.innerHTML = `
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-subtitle mb-2">
+                                    <span class="badge bg-secondary me-2">Demo User</span>
+                                </h6>
+                                <small class="text-muted">${data.comment.created_at}</small>
+                            </div>
+                            <p class="card-text">${data.comment.text}</p>
+                        </div>
+                    `;
+                    
+                    // If there are no comments yet, clear the "no comments" message
+                    if (commentsContainer.querySelector('.text-center.text-muted')) {
+                        commentsContainer.innerHTML = '';
+                    }
+                    
+                    commentsContainer.prepend(commentCard);
+                }
+            });
+        });
+        
+        // Suggestion functionality
+        const suggestionText = document.getElementById('suggestionText');
+        const submitSuggestion = document.getElementById('submitSuggestion');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
+        
+        submitSuggestion.addEventListener('click', function() {
+            const text = suggestionText.value.trim();
+            if (!text) return;
+            
+            fetch('{{ url_for("add_suggestion", proposal_id=proposal.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear textarea
+                    suggestionText.value = '';
+                    
+                    // Add new suggestion to the container
+                    const suggestionCard = document.createElement('div');
+                    suggestionCard.className = 'card mb-3 border-warning';
+                    suggestionCard.innerHTML = `
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-subtitle mb-2">
+                                    <span class="badge bg-secondary me-2">Demo User</span>
+                                </h6>
+                                <small class="text-muted">${data.suggestion.created_at}</small>
+                            </div>
+                            <p class="card-text">${data.suggestion.text}</p>
+                        </div>
+                    `;
+                    
+                    // If there are no suggestions yet, clear the "no suggestions" message
+                    if (suggestionsContainer.querySelector('.text-center.text-muted')) {
+                        suggestionsContainer.innerHTML = '';
+                    }
+                    
+                    suggestionsContainer.prepend(suggestionCard);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+# Core dependencies
+fastapi==0.103.1
+uvicorn==0.23.2
+pydantic==2.3.0
+python-dotenv==1.0.0
+openai==1.3.0
+langchain==0.0.310
+neo4j==5.10.0
+pytest==7.4.3
+# Logging is built-in, no separate package needed
+spacy==3.5.2
+scikit-learn==1.2.2
+pandas==2.0.1
+numpy==1.24.3
+transformers==4.29.2
+torch==2.0.1
+beautifulsoup4==4.12.2
+nltk==3.8.1
+
+# RAG and claim verification
+faiss-cpu==1.7.4
+sent-splitter==0.4.1
+similarity-search==0.1.4
+sentence-transformers==2.2.2
+chromadb==0.4.18
+pyjwt==2.8.0
+cryptography==41.0.5
+
+# Document processing
+PyPDF2==3.0.1
+python-docx==0.8.11
+spacy==3.6.1
+transformers==4.33.2
+torch==2.0.1
+
+# Database and knowledge graph
+neo4j==5.11.0
+pymongo==4.5.0
+
+# Message broker
+kafka-python==2.0.2
+pika==1.3.2
+
+# API and web
+httpx==0.25.0
+requests==2.31.0
+cors==1.0.1
+
+# Utils
+numpy==1.25.2
+pandas==2.1.0
+tqdm==4.66.1

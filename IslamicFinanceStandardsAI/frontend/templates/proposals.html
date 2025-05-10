@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Enhancement Proposals - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Enhancement Proposals</h2>
+    <div class="d-flex">
+        <div class="input-group me-2">
+            <input type="text" class="form-control" placeholder="Search proposals..." id="proposalSearch">
+            <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Filter
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                <li><h6 class="dropdown-header">Status</h6></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}">All</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?status=pending">Pending</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?status=approved">Approved</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?status=rejected">Rejected</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?status=needs_revision">Needs Revision</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header">Sort By</h6></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?sort=newest">Newest</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?sort=votes">Most Votes</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('proposals_list') }}?sort=comments">Most Comments</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if not request.args.get('status') else '' }}" href="{{ url_for('proposals_list') }}">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.args.get('status') == 'pending' else '' }}" href="{{ url_for('proposals_list') }}?status=pending">Pending</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.args.get('status') == 'approved' else '' }}" href="{{ url_for('proposals_list') }}?status=approved">Approved</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.args.get('status') == 'rejected' else '' }}" href="{{ url_for('proposals_list') }}?status=rejected">Rejected</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.args.get('status') == 'needs_revision' else '' }}" href="{{ url_for('proposals_list') }}?status=needs_revision">Needs Revision</a>
+            </li>
+        </ul>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Standard</th>
+                    <th>Status</th>
+                    <th>Votes</th>
+                    <th>Comments</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if proposals %}
+                    {% for proposal in proposals %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('proposal_detail', proposal_id=proposal.id) }}" class="fw-bold text-decoration-none">
+                                {{ proposal.properties.title }}
+                            </a>
+                        </td>
+                        <td>{{ proposal.properties.standard_id }}</td>
+                        <td>
+                            {% if proposal.properties.status == 'pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% elif proposal.properties.status == 'approved' %}
+                            <span class="badge bg-success">Approved</span>
+                            {% elif proposal.properties.status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% elif proposal.properties.status == 'needs_revision' %}
+                            <span class="badge bg-info">Needs Revision</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ proposal.properties.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">{{ proposal.votes.score }}</span>
+                                <div>
+                                    <div class="text-success"><i class="fas fa-arrow-up"></i> {{ proposal.votes.upvotes }}</div>
+                                    <div class="text-danger"><i class="fas fa-arrow-down"></i> {{ proposal.votes.downvotes }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ proposal.comments|length if proposal.comments else 0 }}</span>
+                        </td>
+                        <td>{{ proposal.properties.timestamp|default('N/A') }}</td>
+                        <td>
+                            <a href="{{ url_for('view_proposal', proposal_id=proposal.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                <p>No enhancement proposals found.</p>
+                                {% if request.args.get('status') or request.args.get('sort') %}
+                                <a href="{{ url_for('proposals') }}" class="btn btn-sm btn-outline-primary">Clear Filters</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% if proposals and proposals|length >= 20 %}
+    <div class="card-footer">
+        <nav aria-label="Proposal pagination">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('proposalSearch');
+        const searchButton = document.getElementById('searchButton');
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                window.location.href = "{{ url_for('proposals') }}?search=" + encodeURIComponent(searchTerm);
+            }
+        }
+        
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    });
+</script>
+{% endblock %}

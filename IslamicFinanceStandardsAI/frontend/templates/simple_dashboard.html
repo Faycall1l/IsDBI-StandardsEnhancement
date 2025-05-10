@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Dashboard</h2>
+            <p class="lead">Welcome to your Islamic Finance Standards Enhancement dashboard.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Activity Summary -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('proposals_list') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-list me-2"></i> All Proposals
+                    </a>
+                    <a href="{{ url_for('proposals_list') }}?status=pending" class="list-group-item list-group-item-action">
+                        <i class="fas fa-clock me-2"></i> Pending Proposals
+                    </a>
+                    <a href="{{ url_for('proposals_list') }}?status=approved" class="list-group-item list-group-item-action">
+                        <i class="fas fa-check me-2"></i> Approved Proposals
+                    </a>
+                    <a href="{{ url_for('proposals_list') }}?status=needs_revision" class="list-group-item list-group-item-action">
+                        <i class="fas fa-edit me-2"></i> Proposals Needing Revision
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Your Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_activities %}
+                        <div class="list-group">
+                            {% for activity in user_activities %}
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        {% if activity.type == 'comment' %}
+                                        <i class="fas fa-comment text-primary me-2"></i> Comment on
+                                        {% else %}
+                                        <i class="fas fa-lightbulb text-warning me-2"></i> Suggestion for
+                                        {% endif %}
+                                        <a href="{{ url_for('proposal_detail', proposal_id=activity.proposal_id) }}">{{ activity.proposal_title }}</a>
+                                    </h6>
+                                    <small>{{ activity.created_at }}</small>
+                                </div>
+                                <p class="mb-1">{{ activity.text }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No activity yet</h5>
+                            <p>Start participating by commenting on proposals or making suggestions.</p>
+                            <a href="{{ url_for('proposals_list') }}" class="btn btn-primary mt-2">
+                                <i class="fas fa-list me-2"></i> Browse Proposals
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Active Proposals -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Most Active Proposals</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Proposal</th>
+                                    <th>Status</th>
+                                    <th>Activity</th>
+                                    <th>Votes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for proposal in proposals_with_activity %}
+                                <tr>
+                                    <td>{{ proposal.title }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ {'pending': 'warning', 'approved': 'success', 'rejected': 'danger', 'needs_revision': 'info'}[proposal.status] }}">
+                                            {{ proposal.status|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ proposal.activity_count }} interactions</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-{{ 'success' if proposal.votes > 0 else 'danger' if proposal.votes < 0 else 'secondary' }}">
+                                            {{ proposal.votes if proposal.votes != 0 else '0' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('proposal_detail', proposal_id=proposal.id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('proposals_list') }}" class="btn btn-sm btn-outline-primary">View All Proposals</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

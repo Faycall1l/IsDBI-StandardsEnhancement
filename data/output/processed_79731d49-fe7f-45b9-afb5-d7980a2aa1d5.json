@@ -1,0 +1,28 @@
+{
+  "id": "79731d49-fe7f-45b9-afb5-d7980a2aa1d5",
+  "standard_id": "FAS4",
+  "file_path": "data/uploads/FAS4_20250510212912.pdf",
+  "processed_at": "2025-05-10 21:29:12",
+  "extracted_data": {
+    "definitions": [
+      {
+        "term": "Musharaka",
+        "definition": "A partnership contract between two or more parties."
+      },
+      {
+        "term": "Diminishing Musharaka",
+        "definition": "A form of partnership where one partner promises to buy the equity share of the other partner gradually."
+      }
+    ],
+    "accounting_treatments": [
+      {
+        "title": "Initial Recognition",
+        "content": "The partner's share in Musharaka capital shall be recognized when payment is made."
+      },
+      {
+        "title": "Profit Distribution",
+        "content": "Profits shall be recognized based on the agreed profit-sharing ratio."
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+2025-05-10 14:10:37,237 - __main__ - INFO - Starting Gemini integration test
+2025-05-10 14:10:37,237 - __main__ - INFO - USE_GEMINI: true
+2025-05-10 14:10:37,237 - __main__ - INFO - GEMINI_API_KEY: AIzaSyAND6...
+2025-05-10 14:10:37,237 - __main__ - INFO - Testing Gemini text generation
+2025-05-10 14:10:37,237 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:10:39,723 - __main__ - INFO - Gemini response: Musharaka is an Islamic financing mode based on the principle of profit and loss sharing.  It involves a joint venture where two or more parties contribute capital to a business undertaking.  Profits are distributed proportionally to the capital contributed, while losses are shared according to a pre-agreed ratio.  Interest is strictly prohibited, making it a key alternative to conventional financing.
+
+2025-05-10 14:10:39,724 - __main__ - INFO - Testing claim classification with Gemini
+2025-05-10 14:10:39,724 - utils.web_retriever - INFO - Classifying claims in text
+2025-05-10 14:10:40,781 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:10:40,783 - openai._base_client - INFO - Retrying request to /chat/completions in 0.951581 seconds
+2025-05-10 14:10:41,991 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:10:41,992 - openai._base_client - INFO - Retrying request to /chat/completions in 1.777761 seconds
+2025-05-10 14:10:43,989 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:10:43,991 - utils.web_retriever - ERROR - Error classifying claims: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 14:10:43,991 - utils.web_retriever - INFO - Falling back to Gemini for claim classification
+2025-05-10 14:10:43,993 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:10:43,993 - utils.gemini_client - ERROR - Error generating text with Gemini: GenerativeModel.start_chat() got an unexpected keyword argument 'system_instruction'
+2025-05-10 14:10:43,993 - __main__ - INFO - Classified 0 verifiable claims and 0 subjective suggestions
+2025-05-10 14:10:43,993 - __main__ - INFO - Testing claim verification with Gemini
+2025-05-10 14:10:43,993 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:10:43,994 - utils.gemini_client - ERROR - Error generating text with Gemini: GenerativeModel.start_chat() got an unexpected keyword argument 'system_instruction'
+2025-05-10 14:10:43,994 - __main__ - INFO - Verification result: False (Confidence: 0.5)
+2025-05-10 14:10:43,994 - __main__ - INFO - Evidence: Error: GenerativeModel.start_chat() got an unexpected keyword argument 'system_instruction'
+2025-05-10 14:10:43,994 - __main__ - INFO - All Gemini integration tests completed
+2025-05-10 14:11:19,899 - __main__ - INFO - Starting Gemini integration test
+2025-05-10 14:11:19,899 - __main__ - INFO - USE_GEMINI: true
+2025-05-10 14:11:19,899 - __main__ - INFO - GEMINI_API_KEY: AIzaSyAND6...
+2025-05-10 14:11:19,900 - __main__ - INFO - Testing Gemini text generation
+2025-05-10 14:11:19,900 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:11:22,012 - __main__ - INFO - Gemini response: Musharaka is an Islamic financing mode based on profit and loss sharing between a financier (investor) and an entrepreneur.  Both parties contribute capital to a business venture and share the profits proportionally to their contributions.  Losses are also shared proportionally, reflecting a true partnership rather than a debt-based relationship.  It avoids interest (riba), a key principle prohibited in Islamic finance.
+
+2025-05-10 14:11:22,012 - __main__ - INFO - Testing claim classification with Gemini
+2025-05-10 14:11:22,012 - utils.web_retriever - INFO - Classifying claims in text
+2025-05-10 14:11:23,044 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:11:23,045 - openai._base_client - INFO - Retrying request to /chat/completions in 0.998974 seconds
+2025-05-10 14:11:24,980 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:11:24,982 - openai._base_client - INFO - Retrying request to /chat/completions in 1.899067 seconds
+2025-05-10 14:11:27,092 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:11:27,093 - utils.web_retriever - ERROR - Error classifying claims: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 14:11:27,093 - utils.web_retriever - INFO - Falling back to Gemini for claim classification
+2025-05-10 14:11:27,095 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:11:28,866 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 14:11:28,867 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios.', 'In Musharaka contracts, losses must be shared in proportion to capital contribution.', 'Musharaka is a fundamental principle in Islamic finance.']
+2025-05-10 14:11:28,867 - __main__ - INFO - Sample subjective suggestions: ['The standard could be improved by adding more examples of modern applications of Musharaka in project financing.']
+2025-05-10 14:11:28,867 - __main__ - INFO - Testing claim verification with Gemini
+2025-05-10 14:11:28,868 - utils.gemini_client - INFO - Initialized Gemini client
+2025-05-10 14:11:31,207 - __main__ - INFO - Verification result: True (Confidence: 1.0)
+2025-05-10 14:11:31,207 - __main__ - INFO - Evidence: : The provided text explicitly states in section 4.1, "Losses must be shared in proportion to capital contribution," and further reinforces this in 4.2 by stating that any condition contradicting this principle is void in Shariah.  This directly supports the claim.
+2025-05-10 14:11:31,207 - __main__ - INFO - All Gemini integration tests completed

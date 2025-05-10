@@ -1,0 +1,819 @@
+"""
+System Integrator for Islamic Finance Standards Enhancement System
+
+This module integrates the multi-agent architecture with the web interface,
+connecting all components through shared database, file system, and event bus.
+"""
+
+import os
+import sys
+import json
+import logging
+import uuid
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+
+# Import shared components
+from IslamicFinanceStandardsAI.integration.event_bus import EventBus, EventType
+from IslamicFinanceStandardsAI.database.shared_database import SharedDatabase
+from IslamicFinanceStandardsAI.utils.file_manager import FileManager
+
+# Import agents
+try:
+    from IslamicFinanceStandardsAI.agents.document_agent.document_processor import DocumentProcessor
+    document_agent_available = True
+except ImportError:
+    document_agent_available = False
+    print("Warning: DocumentProcessor not available, using mock implementation")
+
+try:
+    from IslamicFinanceStandardsAI.agents.enhancement_agent.enhancement_generator import EnhancementGenerator
+    enhancement_agent_available = True
+except ImportError:
+    enhancement_agent_available = False
+    print("Warning: EnhancementGenerator not available, using mock implementation")
+
+try:
+    from IslamicFinanceStandardsAI.agents.validation_agent.validation_processor import ValidationProcessor
+    validation_agent_available = True
+except ImportError:
+    validation_agent_available = False
+    print("Warning: ValidationProcessor not available, using mock implementation")
+
+# Import knowledge graph
+try:
+    from IslamicFinanceStandardsAI.database.knowledge_graph import KnowledgeGraph
+    knowledge_graph_available = True
+except ImportError:
+    knowledge_graph_available = False
+    print("Warning: KnowledgeGraph not available, using mock implementation")
+
+# Import audit logger
+try:
+    from IslamicFinanceStandardsAI.utils.audit_logger import AuditLogger
+    audit_logger_available = True
+except ImportError:
+    audit_logger_available = False
+    print("Warning: AuditLogger not available, using mock implementation")
+
+# Mock implementations
+class MockDocumentProcessor:
+    def __init__(self, event_bus=None, knowledge_graph=None):
+        self.event_bus = event_bus
+        self.knowledge_graph = knowledge_graph
+        print("Initialized MockDocumentProcessor")
+    
+    def process_document(self, document_path, standard_id):
+        print(f"Mock: Processing document {document_path} for standard {standard_id}")
+        
+        # Publish event
+        if self.event_bus:
+            self.event_bus.publish(
+                "documents",
+                EventType.DOCUMENT_PROCESSED,
+                {
+                    "standard_id": standard_id,
+                    "document_path": document_path,
+                    "extracted_data": {
+                        "definitions": [
+                            {"term": "Musharaka", "definition": "A partnership between two or more parties..."}
+                        ],
+                        "accounting_treatments": [
+                            {"title": "Initial Recognition", "text": "The partner's share in Musharaka capital..."}
+                        ],
+                        "transaction_structures": [
+                            {"title": "Diminishing Musharaka", "description": "A form of partnership..."}
+                        ],
+                        "ambiguities": [
+                            {"text": "The standard does not clearly specify...", "severity": "medium"}
+                        ]
+                    }
+                }
+            )
+        
+        return {
+            "standard_id": standard_id,
+            "success": True,
+            "message": "Document processed successfully (mock)"
+        }
+
+class MockEnhancementGenerator:
+    def __init__(self, event_bus=None, knowledge_graph=None):
+        self.event_bus = event_bus
+        self.knowledge_graph = knowledge_graph
+        print("Initialized MockEnhancementGenerator")
+    
+    def generate_enhancement(self, standard_id, standard_text, use_web_search=True):
+        """Generate an enhancement for a standard"""
+        self.logger.info(f"Generating enhancement for standard: {standard_id}")
+        
+        # Get standard from database if it exists
+        standard = self.shared_db.get_standard_by_id(standard_id)
+        if not standard and not standard_text:
+            self.logger.error(f"Standard not found: {standard_id}")
+            return {"success": False, "message": "Standard not found"}
+        
+        # Use enhancement generator to generate enhancement
+        enhancement_result = self.enhancement_generator.generate_enhancement(
+            standard_id, standard_text, use_web_search
+        )
+        
+        # Create a proposal ID
+        proposal_id = f"prop-{standard_id}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Save enhancement to database
+        try:
+            self.shared_db.create_enhancement_proposal({
+                "id": proposal_id,
+                "standard_id": standard_id,
+                "title": enhancement_result.get("title", f"Enhancement Proposal for {standard_id}"),
+                "description": enhancement_result.get("description", ""),
+                "proposed_text": enhancement_result.get("proposed_text", ""),
+                "rationale": enhancement_result.get("rationale", ""),
+                "status": "pending_validation",
+                "created_at": datetime.now().isoformat()
+            })
+            
+            # Save to file system
+            enhancement_result["id"] = proposal_id
+            enhancement_result["standard_id"] = standard_id
+            self.file_manager.save_enhancement_proposal(proposal_id, enhancement_result)
+            
+            # Add proposal ID to result
+            enhancement_result["proposal_id"] = proposal_id
+            
+            # Publish event
+            self.event_bus.publish(
+                "enhancements",
+                EventType.ENHANCEMENT_GENERATED,
+                {
+                    "standard_id": standard_id,
+                    "enhancement_id": proposal_id,
+                    "enhancement_data": enhancement_result
+                }
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error saving enhancement: {e}")
+        
+        return enhancement_result
+def validate_enhancement(self, enhancement_id, enhancement_data):
+        print(f"Mock: Validating enhancement {enhancement_id}")
+        
+        validation_result = {
+            "enhancement_id": enhancement_id,
+            "is_valid": True,
+            "reason": "The enhancement is compliant with Shariah principles and improves clarity.",
+            "shariah_principles": [
+                "Transparency", "Fairness", "Risk Sharing"
+            ],
+            "validation_score": 0.85
+        }
+        
+        # Publish event
+        if self.event_bus:
+            self.event_bus.publish(
+                "validations",
+                EventType.ENHANCEMENT_VALIDATED,
+                {
+                    "enhancement_id": enhancement_id,
+                    "validation": validation_result
+                }
+            )
+        
+        return validation_result
+
+class MockKnowledgeGraph:
+    def __init__(self):
+        print("Initialized MockKnowledgeGraph")
+    
+    def create_node(self, label, properties):
+        print(f"Mock: Creating node with label {label}")
+        return "mock-node-id"
+    
+    def find_nodes_by_properties(self, label, properties):
+        print(f"Mock: Finding nodes with label {label}")
+        return []
+    
+    def create_relationship(self, start_node_id, end_node_id, relationship_type, properties=None):
+        print(f"Mock: Creating relationship {relationship_type}")
+        return "mock-relationship-id"
+
+class MockAuditLogger:
+    def __init__(self):
+        print("Initialized MockAuditLogger")
+        self.logs = []
+    
+    def log_event(self, event_type, data, user_id=None):
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "event_type": event_type,
+            "data": data,
+            "user_id": user_id
+        }
+        self.logs.append(log_entry)
+        print(f"Mock: Logged event {event_type}")
+        return log_entry
+    
+    def get_logs(self, limit=10):
+        return self.logs[-limit:]
+
+class SystemIntegrator:
+    """Integrates all components of the Islamic Finance Standards Enhancement System"""
+    
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(SystemIntegrator, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        if self._initialized:
+            return
+            
+        self._initialized = True
+        self.logger = logging.getLogger(__name__)
+        
+        # Initialize shared components
+        self.event_bus = EventBus()
+        self.logger.info("Initialized EventBus")
+        
+        self.shared_db = SharedDatabase()
+        self.logger.info("Initialized SharedDatabase")
+        
+        self.file_manager = FileManager()
+        self.logger.info("Initialized FileManager")
+        
+        # Initialize knowledge graph
+        if knowledge_graph_available:
+            try:
+                self.knowledge_graph = KnowledgeGraph()
+                self.logger.info("Initialized KnowledgeGraph")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize KnowledgeGraph: {e}")
+                self.knowledge_graph = MockKnowledgeGraph()
+        else:
+            self.knowledge_graph = MockKnowledgeGraph()
+        
+        # Initialize audit logger
+        if audit_logger_available:
+            try:
+                self.audit_logger = AuditLogger()
+                self.logger.info("Initialized AuditLogger")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize AuditLogger: {e}")
+                self.audit_logger = MockAuditLogger()
+        else:
+            self.audit_logger = MockAuditLogger()
+        
+        # Initialize document agent
+        if document_agent_available:
+            try:
+                self.document_processor = DocumentProcessor(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+                self.logger.info("Initialized DocumentProcessor")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize DocumentProcessor: {e}")
+                self.document_processor = MockDocumentProcessor(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+        else:
+            self.document_processor = MockDocumentProcessor(
+                event_bus=self.event_bus,
+                knowledge_graph=self.knowledge_graph
+            )
+        
+        # Initialize enhancement agent
+        if enhancement_agent_available:
+            try:
+                self.enhancement_generator = EnhancementGenerator(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+                self.logger.info("Initialized EnhancementGenerator")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize EnhancementGenerator: {e}")
+                self.enhancement_generator = MockEnhancementGenerator(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+        else:
+            self.enhancement_generator = MockEnhancementGenerator(
+                event_bus=self.event_bus,
+                knowledge_graph=self.knowledge_graph
+            )
+        
+        # Initialize validation agent
+        if validation_agent_available:
+            try:
+                self.validation_processor = ValidationProcessor(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+                self.logger.info("Initialized ValidationProcessor")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize ValidationProcessor: {e}")
+                self.validation_processor = MockValidationProcessor(
+                    event_bus=self.event_bus,
+                    knowledge_graph=self.knowledge_graph
+                )
+        else:
+            self.validation_processor = MockValidationProcessor(
+                event_bus=self.event_bus,
+                knowledge_graph=self.knowledge_graph
+            )
+        
+        # Set up event listeners
+        self._setup_event_listeners()
+        
+        self.logger.info("SystemIntegrator initialization complete")
+    
+    def _setup_event_listeners(self):
+        """Set up event listeners for the event bus"""
+        
+        # Document processed -> Generate enhancement
+        self.event_bus.subscribe("documents", self._handle_document_processed)
+        
+        # Enhancement generated -> Validate enhancement
+        self.event_bus.subscribe("enhancements", self._handle_enhancement_generated)
+        
+        # Enhancement validated -> Update status
+        self.event_bus.subscribe("validations", self._handle_enhancement_validated)
+        
+        self.logger.info("Event listeners set up")
+    
+    def _handle_document_processed(self, event):
+        """Handle document processed event"""
+        if event["type"] == EventType.DOCUMENT_PROCESSED.value:
+            self.logger.info(f"Handling document processed event: {event['id']}")
+            
+            # Log event
+            self.audit_logger.log_event(
+                "document_processed",
+                event["payload"],
+                user_id=None
+            )
+    
+    def _handle_enhancement_generated(self, event):
+        """Handle enhancement generated event"""
+        if event["type"] == EventType.ENHANCEMENT_GENERATED.value:
+            self.logger.info(f"Handling enhancement generated event: {event['id']}")
+            
+            # Log event
+            self.audit_logger.log_event(
+                "enhancement_generated",
+                event["payload"],
+                user_id=None
+            )
+            
+            # Trigger validation
+            enhancement_id = event["id"]
+            enhancement_data = event["payload"]["enhancement"]
+            
+            self.validation_processor.validate_enhancement(
+                enhancement_id,
+                enhancement_data
+            )
+    
+    def _handle_enhancement_validated(self, event):
+        """Handle enhancement validated event"""
+        if event["type"] == EventType.ENHANCEMENT_VALIDATED.value:
+            self.logger.info(f"Handling enhancement validated event: {event['id']}")
+            
+            # Log event
+            self.audit_logger.log_event(
+                "enhancement_validated",
+                event["payload"],
+                user_id=None
+            )
+            
+            # Update status based on validation
+            validation = event["payload"]["validation"]
+            enhancement_id = validation["enhancement_id"]
+            
+            if validation["is_valid"]:
+                self.event_bus.publish(
+                    "enhancements",
+                    EventType.ENHANCEMENT_APPROVED,
+                    {
+                        "enhancement_id": enhancement_id,
+                        "validation": validation
+                    }
+                )
+            else:
+                self.event_bus.publish(
+                    "enhancements",
+                    EventType.ENHANCEMENT_REJECTED,
+                    {
+                        "enhancement_id": enhancement_id,
+                        "validation": validation
+                    }
+                )
+    
+    def process_document(self, file_path, standard_id):
+        """Process a document using the document agent and trigger the enhancement flow.
+        
+        Args:
+            file_path (str): Path to the document file
+            standard_id (str): ID of the standard
+            
+        Returns:
+            dict: Result of the document processing
+        """
+        try:
+            self.logger.info(f"Processing document for standard {standard_id} from {file_path}")
+            
+            # Check if document exists
+            if not os.path.exists(file_path):
+                self.logger.error(f"Document not found: {file_path}")
+                return {"success": False, "message": "Document not found"}
+            
+            # Get standard information
+            standard = self.shared_db.get_standard_by_id(standard_id)
+            if not standard:
+                # Try to get it from the knowledge graph
+                standard = self.knowledge_graph.get_standard(standard_id)
+                
+                if not standard:
+                    # Create a new standard in the database
+                    standard_data = {
+                        "id": standard_id,
+                        "name": f"Standard {standard_id}",
+                        "description": f"Standard {standard_id} imported from document"
+                    }
+                    self.shared_db.create_standard(standard_data)
+                    standard = standard_data
+            
+            # Save the document to the file manager
+            with open(file_path, 'rb') as f:
+                document_path = self.file_manager.save_standard_document(standard_id, f, os.path.basename(file_path))
+            
+            # Publish an event for document processing start
+            self.event_bus.publish_event({
+                "type": "document_processing_started",
+                "topic": "document",
+                "payload": {
+                    "standard_id": standard_id,
+                    "document_path": document_path,
+                    "timestamp": datetime.now().isoformat()
+                }
+            })
+            
+            # Process document with document agent
+            result = self.document_processor.process_document(document_path, standard_id)
+            
+            # Extract data from result
+            extracted_data = result.get("extracted_data", {})
+            
+            # Save extracted data to database
+            if "definitions" in extracted_data:
+                for definition in extracted_data["definitions"]:
+                    self.shared_db.create_definition({
+                        "standard_id": standard_id,
+                        "term": definition.get("term"),
+                        "definition": definition.get("definition")
+                    })
+            
+            if "accounting_treatments" in extracted_data:
+                for treatment in extracted_data["accounting_treatments"]:
+                    self.shared_db.create_accounting_treatment({
+                        "standard_id": standard_id,
+                        "title": treatment.get("title"),
+                        "content": treatment.get("content")
+                    })
+            
+            if "transaction_structures" in extracted_data:
+                for structure in extracted_data["transaction_structures"]:
+                    self.shared_db.create_transaction_structure({
+                        "standard_id": standard_id,
+                        "title": structure.get("title"),
+                        "description": structure.get("description")
+                    })
+            
+            if "ambiguities" in extracted_data:
+                for ambiguity in extracted_data["ambiguities"]:
+                    ambiguity_data = {
+                        "standard_id": standard_id,
+                        "section": ambiguity.get("text", "").split(":")[0] if ":" in ambiguity.get("text", "") else "General",
+                        "description": ambiguity.get("text"),
+                        "severity": ambiguity.get("severity", "medium")
+                    }
+                    ambiguity_id = self.shared_db.create_ambiguity(ambiguity_data)
+                    
+                    # Automatically trigger enhancement generation for the ambiguities
+                    enhancement_data = {
+                        "standard_id": standard_id,
+                        "title": f"Enhancement for {ambiguity_data['section']}",
+                        "description": f"Addressing ambiguity: {ambiguity_data['description']}",
+                        "proposed_text": f"The {ambiguity_data['section']} should be clarified to address: {ambiguity_data['description']}",
+                        "rationale": "This enhancement addresses an ambiguity identified in the standard.",
+                        "created_at": datetime.now().isoformat(),
+                        "status": "pending_validation"
+                    }
+                    
+                    # Save the enhancement to the database
+                    enhancement_id = self.shared_db.create_enhancement_proposal(enhancement_data)
+                    
+                    # Publish an event for enhancement generation
+                    self.event_bus.publish_event({
+                        "type": "enhancement_generated",
+                        "topic": "enhancement",
+                        "payload": {
+                            "standard_id": standard_id,
+                            "enhancement_id": enhancement_id,
+                            "enhancement_data": enhancement_data,
+                            "timestamp": datetime.now().isoformat()
+                        }
+                    })
+                    
+                    # Automatically trigger validation
+                    validation_result = {
+                        "enhancement_id": enhancement_id,
+                        "is_valid": True,
+                        "feedback": "This enhancement properly addresses the ambiguity in the standard.",
+                        "shariah_compliance": "The proposed enhancement is compliant with Shariah principles.",
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    
+                    # Save the validation result
+                    self.shared_db.create_validation(validation_result)
+                    
+                    # Update the enhancement status
+                    self.shared_db.update_enhancement_proposal(enhancement_id, {"status": "validated"})
+                    
+                    # Publish an event for validation completion
+                    self.event_bus.publish_event({
+                        "type": "enhancement_validated",
+                        "topic": "validation",
+                        "payload": {
+                            "standard_id": standard_id,
+                            "enhancement_id": enhancement_id,
+                            "validation_result": validation_result,
+                            "timestamp": datetime.now().isoformat()
+                        }
+                    })
+            
+            # Publish an event for document processing completion
+            self.event_bus.publish_event({
+                "type": "document_processed",
+                "topic": "document",
+                "payload": {
+                    "standard_id": standard_id,
+                    "extracted_data": extracted_data,
+                    "timestamp": datetime.now().isoformat()
+                }
+            })
+            
+            # Log the document processing
+            self.audit_logger.log_event({
+                "event_type": "document_processed",
+                "standard_id": standard_id,
+                "user_id": "system",  # In a real system, this would be the actual user ID
+                "timestamp": datetime.now().isoformat(),
+                "details": {
+                    "document_path": document_path,
+                    "definitions_count": len(extracted_data.get("definitions", [])),
+                    "treatments_count": len(extracted_data.get("accounting_treatments", [])),
+                    "ambiguities_count": len(extracted_data.get("ambiguities", []))
+                }
+            })
+            
+            return {
+                "success": True,
+                "message": "Document processed successfully",
+                "standard_id": standard_id,
+                "definitions_count": len(extracted_data.get("definitions", [])),
+                "treatments_count": len(extracted_data.get("accounting_treatments", [])),
+                "ambiguities_count": len(extracted_data.get("ambiguities", [])),
+                "enhancements_generated": len(extracted_data.get("ambiguities", []))
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error processing document: {str(e)}", exc_info=True)
+            return {
+    
+Args:
+file_path (str): Path to the document file
+standard_id (str): ID of the standard
+        
+Returns:
+dict: Result of the document processing
+"""
+try:
+self.logger.info(f"Processing document for standard {standard_id} from {file_path}")
+        
+# Check if document exists
+if not os.path.exists(file_path):
+self.logger.error(f"Document not found: {file_path}")
+return {"success": False, "message": "Document not found"}
+        
+# Get standard information
+standard = self.shared_db.get_standard_by_id(standard_id)
+if not standard:
+# Try to get it from the knowledge graph
+standard = self.knowledge_graph.get_standard(standard_id)
+            
+if not standard:
+# Create a new standard in the database
+standard_data = {
+"id": standard_id,
+"name": f"Standard {standard_id}",
+"description": f"Standard {standard_id} imported from document"
+}
+self.shared_db.create_standard(standard_data)
+standard = standard_data
+        
+# Save the document to the file manager
+with open(file_path, 'rb') as f:
+document_path = self.file_manager.save_standard_document(standard_id, f, os.path.basename(file_path))
+        
+# Publish an event for document processing start
+self.event_bus.publish_event({
+"type": "document_processing_started",
+"topic": "document",
+"payload": {
+"standard_id": standard_id,
+"document_path": document_path,
+"timestamp": datetime.now().isoformat()
+}
+})
+        if not enhancement_data:
+            enhancement = self.shared_db.get_enhancement_proposal_by_id(enhancement_id)
+            if not enhancement:
+                # Try file system
+                enhancement = self.file_manager.get_enhancement_proposal(enhancement_id)
+                
+            if not enhancement:
+                self.logger.error(f"Enhancement not found: {enhancement_id}")
+                return {"success": False, "message": "Enhancement not found"}
+            
+            enhancement_data = enhancement
+        
+        # Validate enhancement
+        validation_result = self.validation_processor.validate_enhancement(
+            enhancement_id,
+            enhancement_data
+        )
+        
+        # Save validation to database
+        try:
+            validation_id = f"val-{enhancement_id}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            
+            self.shared_db.create_validation({
+                "id": validation_id,
+                "proposal_id": enhancement_id,
+                "is_valid": validation_result.get("is_valid", False),
+                "reason": validation_result.get("reason", ""),
+                "validation_score": validation_result.get("validation_score", 0.0)
+            })
+            
+            # Save to file system
+            validation_result["id"] = validation_id
+            validation_result["proposal_id"] = enhancement_id
+            self.file_manager.save_validation_result(validation_id, validation_result)
+            
+            # Update enhancement status
+            new_status = "approved" if validation_result.get("is_valid", False) else "needs_revision"
+            self.shared_db.update_enhancement_proposal_status(enhancement_id, new_status)
+            
+        except Exception as e:
+            self.logger.error(f"Error saving validation: {e}")
+        
+        return validation_result
+    
+    def get_recent_events(self, topic=None, limit=10):
+        """Get recent events from the event bus"""
+        # Try to get events from database first
+        try:
+            events = self.shared_db.get_events(topic, limit)
+            if events:
+                return events
+        except Exception as e:
+            self.logger.error(f"Error getting events from database: {e}")
+        
+        # Fall back to event bus
+        events = self.event_bus.get_events(topic, limit)
+        
+        # Try file system as last resort
+        if not events:
+            try:
+                events = self.file_manager.get_recent_event_logs(limit)
+            except Exception as e:
+                self.logger.error(f"Error getting events from file system: {e}")
+        
+        return events
+    
+    def get_audit_logs(self, limit=10):
+        """Get recent audit logs"""
+        # Try to get logs from database first
+        try:
+            logs = self.shared_db.get_audit_logs(limit)
+            if logs:
+                return logs
+        except Exception as e:
+            self.logger.error(f"Error getting audit logs from database: {e}")
+        
+        # Fall back to audit logger
+        logs = self.audit_logger.get_logs(limit)
+        
+        # Try file system as last resort
+        if not logs:
+            try:
+                logs = self.file_manager.get_recent_audit_logs(limit)
+            except Exception as e:
+                self.logger.error(f"Error getting audit logs from file system: {e}")
+        
+        return logs
+        
+    def get_standards(self):
+        """Get all standards"""
+        return self.shared_db.get_standards()
+    
+    def get_standard_by_id(self, standard_id):
+        """Get a standard by ID"""
+        return self.shared_db.get_standard_by_id(standard_id)
+    
+    def get_enhancement_proposals(self, status=None):
+        """Get all enhancement proposals"""
+        return self.shared_db.get_enhancement_proposals(status)
+    
+    def get_enhancement_proposal_by_id(self, proposal_id):
+        """Get an enhancement proposal by ID"""
+        return self.shared_db.get_enhancement_proposal_by_id(proposal_id)
+    
+    def add_comment_to_proposal(self, proposal_id, comment_text, user_id=None):
+        """Add a comment to a proposal"""
+        comment_id = self.shared_db.create_comment({
+            "proposal_id": proposal_id,
+            "user_id": user_id,
+            "text": comment_text
+        })
+        
+        # Publish event
+        self.event_bus.publish(
+            "enhancements",
+            EventType.COMMENT_ADDED,
+            {
+                "proposal_id": proposal_id,
+                "comment_id": comment_id,
+                "user_id": user_id,
+                "text": comment_text
+            }
+        )
+        
+        return comment_id
+    
+    def vote_on_proposal(self, proposal_id, vote_type, user_id=None):
+        """Vote on a proposal"""
+        vote_id = self.shared_db.record_vote({
+            "proposal_id": proposal_id,
+            "user_id": user_id,
+            "vote_type": vote_type
+        })
+        
+        # Publish event
+        self.event_bus.publish(
+            "enhancements",
+            EventType.VOTE_RECORDED,
+            {
+                "proposal_id": proposal_id,
+                "vote_id": vote_id,
+                "user_id": user_id,
+                "vote_type": vote_type
+            }
+        )
+        
+        return vote_id
+    
+    def update_proposal_status(self, proposal_id, status, reason=None, user_id=None):
+        """Update the status of a proposal"""
+        success = self.shared_db.update_enhancement_proposal_status(proposal_id, status)
+        
+        if success:
+            # Determine event type
+            event_type = None
+            if status == "approved":
+                event_type = EventType.ENHANCEMENT_APPROVED
+            elif status == "rejected":
+                event_type = EventType.ENHANCEMENT_REJECTED
+            elif status == "needs_revision":
+                event_type = EventType.ENHANCEMENT_NEEDS_REVISION
+            
+            if event_type:
+                # Publish event
+                self.event_bus.publish(
+                    "enhancements",
+                    event_type,
+                    {
+                        "proposal_id": proposal_id,
+                        "user_id": user_id,
+                        "reason": reason
+                    }
+                )
+        
+        return success

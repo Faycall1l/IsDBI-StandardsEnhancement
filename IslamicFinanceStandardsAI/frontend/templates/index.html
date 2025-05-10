@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container">
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold">Islamic Finance Standards Enhancement Platform</h1>
+            <div class="mb-4">
+                <span class="badge bg-primary me-2">Community Collaboration</span>
+                <span class="badge bg-success me-2">Shariah Compliance</span>
+                <span class="badge bg-info">AI-Powered</span>
+            </div>
+            <div class="lead mb-4">
+                <p>
+                    Welcome to the Islamic Finance Standards Enhancement Platform, where scholars, practitioners, and regulators 
+                    collaborate to improve AAOIFI standards through a structured, transparent process.
+                </p>
+                <p>
+                    Our platform combines human expertise with AI-powered suggestions to propose meaningful enhancements 
+                    for AAOIFI standards, ensuring continuous improvement and adaptation to evolving market needs.
+                </p>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary me-md-2">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('proposals_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i> View Proposals
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img src="{{ url_for('static', filename='img/hero-image.svg') }}" alt="Islamic Finance Standards Enhancement" class="img-fluid">
+        </div>
+    </div>
+                            </p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">No recent activity.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+# FAS 4 - Musharaka Financing
+
+## Introduction
+This document outlines the accounting principles for Musharaka financing in accordance with Islamic Shariah principles.
+
+## Definitions
+**Musharaka**: A partnership contract where all partners contribute capital and share profits and losses according to a pre-agreed ratio.
+
+**Capital**: The money or assets that partners contribute to the partnership.
+
+**Profit**: The increase over capital that is generated from business operations.
+
+**Loss**: The decrease in capital that results from business operations.
+
+## Accounting Treatments
+1. **Initial Recognition**: Musharaka financing shall be recognized at the time of disbursement of funds to the partner.
+
+2. **Measurement**: Musharaka financing shall be measured at the amount of funds disbursed less any impairment.
+
+3. **Profit Recognition**: Profits shall be recognized when realized and distributed according to the agreed ratio.
+
+4. **Loss Recognition**: Losses shall be recognized immediately and distributed according to the capital contribution ratio.
+
+## Transaction Structures
+### Diminishing Musharaka
+1. One partner promises to buy the other partner's share gradually.
+2. The buying partner pays rent for using the selling partner's share.
+3. The ownership gradually transfers to the buying partner.
+
+### Permanent Musharaka
+1. Partners contribute capital to a joint venture.
+2. Profits are distributed according to an agreed ratio.
+3. Losses are distributed according to capital contribution.
+4. The partnership continues indefinitely.
+
+## Ambiguities
+- The standard does not clearly define how to account for non-monetary contributions to Musharaka.
+- There is ambiguity regarding the treatment of expenses incurred before the Musharaka agreement is finalized.
+- The standard does not address how to account for partial withdrawals of capital during the Musharaka term.

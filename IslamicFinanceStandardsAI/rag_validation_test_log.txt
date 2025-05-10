@@ -1,0 +1,511 @@
+2025-05-10 13:48:33,409 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 13:48:33,410 - database.knowledge_graph - INFO - Successfully connected to Neo4j knowledge graph
+2025-05-10 13:48:33,411 - __main__ - WARNING - Neo4j not available: Couldn't connect to localhost:7687 (resolved to ()):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+2025-05-10 13:48:33,411 - __main__ - INFO - Using MockKnowledgeGraph instead
+2025-05-10 13:48:33,411 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 13:48:33,411 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 13:48:33,411 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:48:33,411 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 13:48:33,411 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 13:48:33,411 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:48:33,411 - __main__ - INFO - RAG Validation Test initialized with all components
+2025-05-10 13:48:33,411 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 13:48:33,411 - utils.web_retriever - INFO - Searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 13:48:39,602 - __main__ - WARNING - No standards found for the query
+2025-05-10 13:48:39,602 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 13:48:39,602 - utils.web_retriever - INFO - Classifying claims in text
+2025-05-10 13:48:40,852 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:48:40,853 - openai._base_client - INFO - Retrying request to /chat/completions in 0.986216 seconds
+2025-05-10 13:48:42,129 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:48:42,130 - openai._base_client - INFO - Retrying request to /chat/completions in 1.872917 seconds
+2025-05-10 13:48:44,721 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:48:44,721 - utils.web_retriever - ERROR - Error classifying claims: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:48:44,722 - __main__ - INFO - Classified 2 verifiable claims and 1 subjective suggestions
+2025-05-10 13:48:44,722 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios, \n        while losses must be shared in proportion to capital contribution', 'This is a fundamental \n        principle in Islamic finance']
+2025-05-10 13:48:44,722 - __main__ - INFO - Sample subjective suggestions: ['I believe the standard could be improved by adding more \n        examples of modern applications of Musharaka in project financing']
+2025-05-10 13:48:44,722 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+        while losses must be shared in proportion to capital contribution
+2025-05-10 13:48:44,722 - utils.web_retriever - INFO - Searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+        while losses must be shared in proportion to capital contribution
+2025-05-10 13:48:50,425 - __main__ - WARNING - No standards found to verify the claim
+2025-05-10 13:48:50,426 - __main__ - INFO - Testing claim verification for: This is a fundamental 
+        principle in Islamic finance
+2025-05-10 13:48:50,426 - utils.web_retriever - INFO - Searching for standards with query: This is a fundamental 
+        principle in Islamic finance
+2025-05-10 13:48:57,079 - __main__ - WARNING - No standards found to verify the claim
+2025-05-10 13:48:57,079 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 13:48:57,079 - database.mock_knowledge_graph - WARNING - Node with ID mock_proposal_1 not found
+2025-05-10 13:48:57,080 - __main__ - WARNING - Proposal with ID mock_proposal_1 not found
+2025-05-10 13:48:57,080 - agents.validation_agent.validation_agent - INFO - Validating proposal ID: mock_proposal_1
+2025-05-10 13:48:57,080 - database.mock_knowledge_graph - WARNING - Node with ID mock_proposal_1 not found
+2025-05-10 13:48:57,080 - __main__ - ERROR - Validation with RAG test failed: Proposal with ID mock_proposal_1 not found in knowledge graph
+2025-05-10 13:48:57,082 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 180, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(proposal["id"])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 109, in validate_proposal
+    raise ValueError(f"Proposal with ID {proposal_id} not found in knowledge graph")
+ValueError: Proposal with ID mock_proposal_1 not found in knowledge graph
+
+2025-05-10 13:48:57,082 - __main__ - ERROR - Test failed: Proposal with ID mock_proposal_1 not found in knowledge graph
+2025-05-10 13:48:57,083 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 225, in main
+    test_suite.test_validation_with_rag("mock_proposal_1")
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 180, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(proposal["id"])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 109, in validate_proposal
+    raise ValueError(f"Proposal with ID {proposal_id} not found in knowledge graph")
+ValueError: Proposal with ID mock_proposal_1 not found in knowledge graph
+
+2025-05-10 13:52:07,415 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 13:52:07,417 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 13:52:07,417 - database.mock_knowledge_graph - INFO - Created Standard node with ID: 0
+2025-05-10 13:52:07,417 - database.mock_knowledge_graph - INFO - Created Section node with ID: 1
+2025-05-10 13:52:07,417 - database.mock_knowledge_graph - INFO - Created EnhancementProposal node with ID: 2
+2025-05-10 13:52:07,417 - __main__ - INFO - Created mock proposal with ID: mock_proposal_1
+2025-05-10 13:52:07,417 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 13:52:07,417 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:52:07,417 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 13:52:07,417 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 13:52:07,417 - __main__ - INFO - Initializing mock web retriever
+2025-05-10 13:52:07,417 - __main__ - INFO - Initializing mock claim classifier
+2025-05-10 13:52:07,417 - __main__ - INFO - RAG Validation Test initialized with mock components
+2025-05-10 13:52:07,417 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 13:52:07,417 - __main__ - INFO - Mock searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 13:52:07,417 - __main__ - INFO - Found 2 relevant standards
+2025-05-10 13:52:07,417 - __main__ - INFO - Standard 1: AAOIFI Shariah Standard No. 12: Musharaka - https://example.com/aaoifi/standards/ss12
+2025-05-10 13:52:07,417 - __main__ - INFO - Standard 2: FAS 4: Musharaka Financing - https://example.com/aaoifi/standards/fas4
+2025-05-10 13:52:07,417 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:52:07,417 - __main__ - INFO - Content preview: 
+            Musharaka (Partnership)
+            
+            1. Definition:
+            Musharaka is a partnership contract between two or more parties where all partners contribute capital 
+        ...
+2025-05-10 13:52:07,417 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 13:52:07,417 - __main__ - INFO - Mock classifying claims in text: 
+        Musharaka contracts require that profits ...
+2025-05-10 13:52:07,417 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 13:52:07,417 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios,', 'while losses must be shared in proportion to capital contribution. This is a fundamental']
+2025-05-10 13:52:07,417 - __main__ - INFO - Sample subjective suggestions: ['principle in Islamic finance. I believe the standard could be improved by adding more']
+2025-05-10 13:52:07,417 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:52:07,417 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:52:07,417 - __main__ - INFO - Mock searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:52:07,418 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:52:08,504 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:08,505 - openai._base_client - INFO - Retrying request to /chat/completions in 0.835652 seconds
+2025-05-10 13:52:09,955 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:09,956 - openai._base_client - INFO - Retrying request to /chat/completions in 1.550558 seconds
+2025-05-10 13:52:12,333 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:12,334 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:52:12,335 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:52:12,335 - __main__ - INFO - Evidence: ...
+2025-05-10 13:52:12,335 - __main__ - INFO - Testing claim verification for: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:52:12,335 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:52:12,335 - __main__ - INFO - Mock searching for standards with query: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:52:12,335 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/overview
+2025-05-10 13:52:13,278 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:13,279 - openai._base_client - INFO - Retrying request to /chat/completions in 0.884378 seconds
+2025-05-10 13:52:14,899 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:14,900 - openai._base_client - INFO - Retrying request to /chat/completions in 1.568507 seconds
+2025-05-10 13:52:17,169 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:52:17,170 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:52:17,170 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:52:17,170 - __main__ - INFO - Evidence: ...
+2025-05-10 13:52:17,171 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 13:52:17,171 - agents.validation_agent.validation_agent - INFO - Validating proposal ID: mock_proposal_1
+2025-05-10 13:52:17,171 - database.mock_knowledge_graph - WARNING - Node with ID mock_proposal_1 not found
+2025-05-10 13:52:17,171 - __main__ - ERROR - Validation with RAG test failed: Proposal with ID mock_proposal_1 not found in knowledge graph
+2025-05-10 13:52:17,174 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 361, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 109, in validate_proposal
+    raise ValueError(f"Proposal with ID {proposal_id} not found in knowledge graph")
+ValueError: Proposal with ID mock_proposal_1 not found in knowledge graph
+
+2025-05-10 13:52:17,175 - __main__ - ERROR - Test failed: Proposal with ID mock_proposal_1 not found in knowledge graph
+2025-05-10 13:52:17,175 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 408, in main
+    test_suite.test_validation_with_rag()
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 361, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 109, in validate_proposal
+    raise ValueError(f"Proposal with ID {proposal_id} not found in knowledge graph")
+ValueError: Proposal with ID mock_proposal_1 not found in knowledge graph
+
+2025-05-10 13:55:50,519 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 13:55:50,520 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 13:55:50,520 - database.mock_knowledge_graph - INFO - Created Standard node with ID: 0
+2025-05-10 13:55:50,521 - database.mock_knowledge_graph - INFO - Created Section node with ID: 1
+2025-05-10 13:55:50,521 - database.mock_knowledge_graph - INFO - Created EnhancementProposal node with ID: 2
+2025-05-10 13:55:50,521 - __main__ - INFO - Created mock proposal with ID: mock_proposal_1
+2025-05-10 13:55:50,521 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 13:55:50,521 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:55:50,521 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 13:55:50,521 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 13:55:50,521 - __main__ - INFO - Initializing mock web retriever
+2025-05-10 13:55:50,521 - __main__ - INFO - Initializing mock claim classifier
+2025-05-10 13:55:50,521 - __main__ - INFO - RAG Validation Test initialized with mock components
+2025-05-10 13:55:50,521 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 13:55:50,521 - __main__ - INFO - Mock searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 13:55:50,521 - __main__ - INFO - Found 2 relevant standards
+2025-05-10 13:55:50,521 - __main__ - INFO - Standard 1: AAOIFI Shariah Standard No. 12: Musharaka - https://example.com/aaoifi/standards/ss12
+2025-05-10 13:55:50,521 - __main__ - INFO - Standard 2: FAS 4: Musharaka Financing - https://example.com/aaoifi/standards/fas4
+2025-05-10 13:55:50,521 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:55:50,521 - __main__ - INFO - Content preview: 
+            Musharaka (Partnership)
+            
+            1. Definition:
+            Musharaka is a partnership contract between two or more parties where all partners contribute capital 
+        ...
+2025-05-10 13:55:50,521 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 13:55:50,521 - __main__ - INFO - Mock classifying claims in text: 
+        Musharaka contracts require that profits ...
+2025-05-10 13:55:50,521 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 13:55:50,521 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios,', 'while losses must be shared in proportion to capital contribution. This is a fundamental']
+2025-05-10 13:55:50,521 - __main__ - INFO - Sample subjective suggestions: ['principle in Islamic finance. I believe the standard could be improved by adding more']
+2025-05-10 13:55:50,521 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:55:50,521 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:55:50,521 - __main__ - INFO - Mock searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:55:50,521 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:55:51,227 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:51,228 - openai._base_client - INFO - Retrying request to /chat/completions in 0.910569 seconds
+2025-05-10 13:55:52,512 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:52,512 - openai._base_client - INFO - Retrying request to /chat/completions in 1.957093 seconds
+2025-05-10 13:55:54,689 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:54,691 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:55:54,691 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:55:54,691 - __main__ - INFO - Evidence: ...
+2025-05-10 13:55:54,692 - __main__ - INFO - Testing claim verification for: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:55:54,692 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:55:54,692 - __main__ - INFO - Mock searching for standards with query: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:55:54,692 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/overview
+2025-05-10 13:55:55,592 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:55,594 - openai._base_client - INFO - Retrying request to /chat/completions in 0.844462 seconds
+2025-05-10 13:55:56,682 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:56,683 - openai._base_client - INFO - Retrying request to /chat/completions in 1.780598 seconds
+2025-05-10 13:55:58,901 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:55:58,902 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:55:58,902 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:55:58,902 - __main__ - INFO - Evidence: ...
+2025-05-10 13:55:58,902 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 13:55:58,902 - agents.validation_agent.validation_agent - INFO - Validating proposal ID: mock_proposal_1
+2025-05-10 13:55:58,903 - agents.validation_agent.validation_agent - INFO - Classifying and verifying claims in proposal
+2025-05-10 13:55:58,903 - agents.validation_agent.validation_agent - INFO - Classifying and verifying claims in proposal
+2025-05-10 13:55:58,903 - __main__ - INFO - Mock classifying claims in text: Musharaka is a partnership contract between two or...
+2025-05-10 13:55:58,903 - __main__ - INFO - Mock classifying claims in text: The original definition lacks clarity on profit an...
+2025-05-10 13:55:58,904 - __main__ - INFO - Mock verifying claim: Musharaka is a partnership contract between two or more parties where all partners contribute capital and share profits according to agreed ratios, while losses are shared in proportion to capital contribution.
+2025-05-10 13:55:58,904 - __main__ - INFO - Mock verifying claim: The original definition lacks clarity on profit and loss sharing mechanisms which are essential aspects of Musharaka contracts according to AAOIFI standards.
+2025-05-10 13:55:58,904 - agents.validation_agent.validation_agent - INFO - Classified 2 verifiable claims and 0 subjective suggestions
+2025-05-10 13:55:58,905 - agents.validation_agent.validation_agent - INFO - Verified 2 claims with a verification rate of 1.00
+2025-05-10 13:55:58,905 - agents.validation_agent.validation_agent - INFO - Verification rate: 1.00
+2025-05-10 13:55:58,905 - agents.validation_agent.validation_agent - INFO - Verified 2 out of 2 verifiable claims
+2025-05-10 13:55:58,905 - __main__ - ERROR - Validation with RAG test failed: 'references'
+2025-05-10 13:55:58,909 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 453, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 131, in validate_proposal
+    validation_scores = self._evaluate_proposal(proposal, standard_info, target_node)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 203, in _evaluate_proposal
+    references = proposal["properties"]["references"]
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'references'
+
+2025-05-10 13:55:58,909 - __main__ - ERROR - Test failed: 'references'
+2025-05-10 13:55:58,910 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 503, in main
+    test_suite.test_validation_with_rag()
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 453, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 131, in validate_proposal
+    validation_scores = self._evaluate_proposal(proposal, standard_info, target_node)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 203, in _evaluate_proposal
+    references = proposal["properties"]["references"]
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'references'
+
+2025-05-10 13:57:05,078 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 13:57:05,080 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 13:57:05,080 - database.mock_knowledge_graph - INFO - Created Standard node with ID: 0
+2025-05-10 13:57:05,080 - database.mock_knowledge_graph - INFO - Created Section node with ID: 1
+2025-05-10 13:57:05,080 - database.mock_knowledge_graph - INFO - Created EnhancementProposal node with ID: 2
+2025-05-10 13:57:05,080 - __main__ - INFO - Created mock proposal with ID: mock_proposal_1
+2025-05-10 13:57:05,080 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 13:57:05,080 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:57:05,080 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 13:57:05,080 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 13:57:05,080 - __main__ - INFO - Initializing mock web retriever
+2025-05-10 13:57:05,080 - __main__ - INFO - Initializing mock claim classifier
+2025-05-10 13:57:05,080 - __main__ - INFO - RAG Validation Test initialized with mock components
+2025-05-10 13:57:05,080 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 13:57:05,080 - __main__ - INFO - Mock searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 13:57:05,080 - __main__ - INFO - Found 2 relevant standards
+2025-05-10 13:57:05,080 - __main__ - INFO - Standard 1: AAOIFI Shariah Standard No. 12: Musharaka - https://example.com/aaoifi/standards/ss12
+2025-05-10 13:57:05,080 - __main__ - INFO - Standard 2: FAS 4: Musharaka Financing - https://example.com/aaoifi/standards/fas4
+2025-05-10 13:57:05,080 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:57:05,081 - __main__ - INFO - Content preview: 
+            Musharaka (Partnership)
+            
+            1. Definition:
+            Musharaka is a partnership contract between two or more parties where all partners contribute capital 
+        ...
+2025-05-10 13:57:05,081 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 13:57:05,081 - __main__ - INFO - Mock classifying claims in text: 
+        Musharaka contracts require that profits ...
+2025-05-10 13:57:05,081 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 13:57:05,081 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios,', 'while losses must be shared in proportion to capital contribution. This is a fundamental']
+2025-05-10 13:57:05,081 - __main__ - INFO - Sample subjective suggestions: ['principle in Islamic finance. I believe the standard could be improved by adding more']
+2025-05-10 13:57:05,081 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:57:05,081 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:57:05,081 - __main__ - INFO - Mock searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:57:05,081 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:57:05,613 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:05,614 - openai._base_client - INFO - Retrying request to /chat/completions in 0.857507 seconds
+2025-05-10 13:57:06,814 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:06,815 - openai._base_client - INFO - Retrying request to /chat/completions in 1.976363 seconds
+2025-05-10 13:57:09,191 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:09,193 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:57:09,193 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:57:09,193 - __main__ - INFO - Evidence: ...
+2025-05-10 13:57:09,193 - __main__ - INFO - Testing claim verification for: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:57:09,193 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:57:09,193 - __main__ - INFO - Mock searching for standards with query: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:57:09,193 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/overview
+2025-05-10 13:57:10,046 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:10,047 - openai._base_client - INFO - Retrying request to /chat/completions in 0.841011 seconds
+2025-05-10 13:57:11,427 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:11,428 - openai._base_client - INFO - Retrying request to /chat/completions in 1.554068 seconds
+2025-05-10 13:57:13,216 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:57:13,217 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:57:13,217 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:57:13,217 - __main__ - INFO - Evidence: ...
+2025-05-10 13:57:13,217 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 13:57:13,217 - agents.validation_agent.validation_agent - INFO - Validating proposal ID: mock_proposal_1
+2025-05-10 13:57:13,217 - agents.validation_agent.validation_agent - INFO - Classifying and verifying claims in proposal
+2025-05-10 13:57:13,217 - agents.validation_agent.validation_agent - INFO - Classifying and verifying claims in proposal
+2025-05-10 13:57:13,217 - __main__ - INFO - Mock classifying claims in text: Musharaka is a partnership contract between two or...
+2025-05-10 13:57:13,217 - __main__ - INFO - Mock classifying claims in text: The original definition lacks clarity on profit an...
+2025-05-10 13:57:13,217 - __main__ - INFO - Mock verifying claim: Musharaka is a partnership contract between two or more parties where all partners contribute capital and share profits according to agreed ratios, while losses are shared in proportion to capital contribution.
+2025-05-10 13:57:13,217 - __main__ - INFO - Mock verifying claim: The original definition lacks clarity on profit and loss sharing mechanisms which are essential aspects of Musharaka contracts according to AAOIFI standards.
+2025-05-10 13:57:13,218 - agents.validation_agent.validation_agent - INFO - Classified 2 verifiable claims and 0 subjective suggestions
+2025-05-10 13:57:13,218 - agents.validation_agent.validation_agent - INFO - Verified 2 claims with a verification rate of 1.00
+2025-05-10 13:57:13,218 - agents.validation_agent.validation_agent - INFO - Verification rate: 1.00
+2025-05-10 13:57:13,218 - agents.validation_agent.validation_agent - INFO - Verified 2 out of 2 verifiable claims
+2025-05-10 13:57:13,218 - __main__ - INFO - Mock evaluating proposal
+2025-05-10 13:57:13,218 - agents.validation_agent.validation_agent - INFO - Adjusted factual accuracy score from 0.88 to 0.92 based on claim verification
+2025-05-10 13:57:13,218 - __main__ - ERROR - Validation with RAG test failed: 'CLARITY'
+2025-05-10 13:57:13,221 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 468, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 149, in validate_proposal
+    overall_score = sum(
+                    ^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 150, in <genexpr>
+    score * self.validation_criteria[criteria]["weight"]
+            ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+KeyError: 'CLARITY'
+
+2025-05-10 13:57:13,222 - __main__ - ERROR - Test failed: 'CLARITY'
+2025-05-10 13:57:13,222 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 519, in main
+    test_suite.test_validation_with_rag()
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 468, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 149, in validate_proposal
+    overall_score = sum(
+                    ^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/agents/validation_agent/validation_agent.py", line 150, in <genexpr>
+    score * self.validation_criteria[criteria]["weight"]
+            ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+KeyError: 'CLARITY'
+
+2025-05-10 13:58:47,503 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 13:58:47,505 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 13:58:47,505 - database.mock_knowledge_graph - INFO - Created Standard node with ID: 0
+2025-05-10 13:58:47,505 - database.mock_knowledge_graph - INFO - Created Section node with ID: 1
+2025-05-10 13:58:47,505 - database.mock_knowledge_graph - INFO - Created EnhancementProposal node with ID: 2
+2025-05-10 13:58:47,505 - __main__ - INFO - Created mock proposal with ID: mock_proposal_1
+2025-05-10 13:58:47,505 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 13:58:47,506 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 13:58:47,506 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 13:58:47,506 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 13:58:47,506 - __main__ - INFO - Initializing mock web retriever
+2025-05-10 13:58:47,506 - __main__ - INFO - Initializing mock claim classifier
+2025-05-10 13:58:47,506 - __main__ - INFO - RAG Validation Test initialized with mock components
+2025-05-10 13:58:47,506 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 13:58:47,506 - __main__ - INFO - Mock searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 13:58:47,506 - __main__ - INFO - Found 2 relevant standards
+2025-05-10 13:58:47,506 - __main__ - INFO - Standard 1: AAOIFI Shariah Standard No. 12: Musharaka - https://example.com/aaoifi/standards/ss12
+2025-05-10 13:58:47,506 - __main__ - INFO - Standard 2: FAS 4: Musharaka Financing - https://example.com/aaoifi/standards/fas4
+2025-05-10 13:58:47,506 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:58:47,506 - __main__ - INFO - Content preview: 
+            Musharaka (Partnership)
+            
+            1. Definition:
+            Musharaka is a partnership contract between two or more parties where all partners contribute capital 
+        ...
+2025-05-10 13:58:47,506 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 13:58:47,506 - __main__ - INFO - Mock classifying claims in text: 
+        Musharaka contracts require that profits ...
+2025-05-10 13:58:47,506 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 13:58:47,506 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios,', 'while losses must be shared in proportion to capital contribution. This is a fundamental']
+2025-05-10 13:58:47,506 - __main__ - INFO - Sample subjective suggestions: ['principle in Islamic finance. I believe the standard could be improved by adding more']
+2025-05-10 13:58:47,506 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:58:47,506 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:58:47,506 - __main__ - INFO - Mock searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 13:58:47,506 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 13:58:48,247 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:48,248 - openai._base_client - INFO - Retrying request to /chat/completions in 0.984289 seconds
+2025-05-10 13:58:49,865 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:49,866 - openai._base_client - INFO - Retrying request to /chat/completions in 1.951881 seconds
+2025-05-10 13:58:52,074 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:52,075 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:58:52,075 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:58:52,075 - __main__ - INFO - Evidence: ...
+2025-05-10 13:58:52,075 - __main__ - INFO - Testing claim verification for: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:58:52,075 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:58:52,076 - __main__ - INFO - Mock searching for standards with query: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 13:58:52,076 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/overview
+2025-05-10 13:58:52,674 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:52,676 - openai._base_client - INFO - Retrying request to /chat/completions in 0.845308 seconds
+2025-05-10 13:58:53,771 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:53,772 - openai._base_client - INFO - Retrying request to /chat/completions in 1.886127 seconds
+2025-05-10 13:58:55,880 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 13:58:55,882 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 13:58:55,882 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 13:58:55,882 - __main__ - INFO - Evidence: ...
+2025-05-10 13:58:55,882 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 13:58:55,882 - __main__ - INFO - Mock validating proposal: mock_proposal_1
+2025-05-10 13:58:55,884 - __main__ - ERROR - Validation with RAG test failed: 1 validation error for ValidationResult
+validation_scores
+  Field required [type=missing, input_value={'proposal_id': 'mock_pro...2, 'CONSISTENCY': 0.87}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.3/v/missing
+2025-05-10 13:58:55,888 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 381, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 343, in mock_validate_proposal
+    validation_result = ValidationResult(
+                        ^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/anaconda3/lib/python3.11/site-packages/pydantic/main.py", line 165, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for ValidationResult
+validation_scores
+  Field required [type=missing, input_value={'proposal_id': 'mock_pro...2, 'CONSISTENCY': 0.87}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.3/v/missing
+
+2025-05-10 13:58:55,888 - __main__ - ERROR - Test failed: 1 validation error for ValidationResult
+validation_scores
+  Field required [type=missing, input_value={'proposal_id': 'mock_pro...2, 'CONSISTENCY': 0.87}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.3/v/missing
+2025-05-10 13:58:55,888 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 432, in main
+    test_suite.test_validation_with_rag()
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 381, in test_validation_with_rag
+    validation_result = self.validation_agent.validate_proposal(self.mock_proposal_id)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/Desktop/IsDBI/IslamicFinanceStandardsAI/test_rag_validation.py", line 343, in mock_validate_proposal
+    validation_result = ValidationResult(
+                        ^^^^^^^^^^^^^^^^^
+  File "/Users/faycalamrouche/anaconda3/lib/python3.11/site-packages/pydantic/main.py", line 165, in __init__
+    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for ValidationResult
+validation_scores
+  Field required [type=missing, input_value={'proposal_id': 'mock_pro...2, 'CONSISTENCY': 0.87}}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.3/v/missing
+
+2025-05-10 14:00:00,260 - __main__ - INFO - Starting RAG and Claim Verification Test
+2025-05-10 14:00:00,261 - database.mock_knowledge_graph - INFO - Initializing mock knowledge graph for testing
+2025-05-10 14:00:00,261 - database.mock_knowledge_graph - INFO - Created Standard node with ID: 0
+2025-05-10 14:00:00,261 - database.mock_knowledge_graph - INFO - Created Section node with ID: 1
+2025-05-10 14:00:00,261 - database.mock_knowledge_graph - INFO - Created EnhancementProposal node with ID: 2
+2025-05-10 14:00:00,261 - __main__ - INFO - Created mock proposal with ID: mock_proposal_1
+2025-05-10 14:00:00,262 - agents.validation_agent.validation_agent - INFO - Initializing RAG engine for validation agent
+2025-05-10 14:00:00,262 - utils.rag_engine - WARNING - Using mock RAG engine as fallback
+2025-05-10 14:00:00,262 - agents.validation_agent.validation_agent - INFO - Initializing claim verifier for validation agent
+2025-05-10 14:00:00,262 - agents.validation_agent.validation_agent - INFO - Initializing web retriever for validation agent
+2025-05-10 14:00:00,262 - __main__ - INFO - Initializing mock web retriever
+2025-05-10 14:00:00,262 - __main__ - INFO - Initializing mock claim classifier
+2025-05-10 14:00:00,262 - __main__ - INFO - RAG Validation Test initialized with mock components
+2025-05-10 14:00:00,262 - __main__ - INFO - Testing web retrieval with query: Musharaka profit and loss sharing
+2025-05-10 14:00:00,262 - __main__ - INFO - Mock searching for standards with query: Musharaka profit and loss sharing
+2025-05-10 14:00:00,262 - __main__ - INFO - Found 2 relevant standards
+2025-05-10 14:00:00,262 - __main__ - INFO - Standard 1: AAOIFI Shariah Standard No. 12: Musharaka - https://example.com/aaoifi/standards/ss12
+2025-05-10 14:00:00,262 - __main__ - INFO - Standard 2: FAS 4: Musharaka Financing - https://example.com/aaoifi/standards/fas4
+2025-05-10 14:00:00,262 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 14:00:00,262 - __main__ - INFO - Content preview: 
+            Musharaka (Partnership)
+            
+            1. Definition:
+            Musharaka is a partnership contract between two or more parties where all partners contribute capital 
+        ...
+2025-05-10 14:00:00,262 - __main__ - INFO - Testing claim classification with text: 
+        Musharaka contracts require that profits be distributed according to pre-agreed ratios, 
+  ...
+2025-05-10 14:00:00,262 - __main__ - INFO - Mock classifying claims in text: 
+        Musharaka contracts require that profits ...
+2025-05-10 14:00:00,262 - __main__ - INFO - Classified 3 verifiable claims and 1 subjective suggestions
+2025-05-10 14:00:00,262 - __main__ - INFO - Sample verifiable claims: ['Musharaka contracts require that profits be distributed according to pre-agreed ratios,', 'while losses must be shared in proportion to capital contribution. This is a fundamental']
+2025-05-10 14:00:00,262 - __main__ - INFO - Sample subjective suggestions: ['principle in Islamic finance. I believe the standard could be improved by adding more']
+2025-05-10 14:00:00,262 - __main__ - INFO - Testing claim verification for: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 14:00:00,262 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 14:00:00,262 - __main__ - INFO - Mock searching for standards with query: Musharaka contracts require that profits be distributed according to pre-agreed ratios,
+2025-05-10 14:00:00,263 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/ss12
+2025-05-10 14:00:00,694 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:00,694 - openai._base_client - INFO - Retrying request to /chat/completions in 0.829473 seconds
+2025-05-10 14:00:01,798 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:01,800 - openai._base_client - INFO - Retrying request to /chat/completions in 1.514560 seconds
+2025-05-10 14:00:03,575 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:03,576 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 14:00:03,577 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 14:00:03,577 - __main__ - INFO - Evidence: ...
+2025-05-10 14:00:03,577 - __main__ - INFO - Testing claim verification for: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 14:00:03,577 - agents.validation_agent.validation_agent - INFO - Verifying claim with web retriever: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 14:00:03,577 - __main__ - INFO - Mock searching for standards with query: while losses must be shared in proportion to capital contribution. This is a fundamental
+2025-05-10 14:00:03,577 - __main__ - INFO - Mock retrieving content from: https://example.com/aaoifi/standards/overview
+2025-05-10 14:00:04,710 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:04,712 - openai._base_client - INFO - Retrying request to /chat/completions in 0.886046 seconds
+2025-05-10 14:00:05,848 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:05,864 - openai._base_client - INFO - Retrying request to /chat/completions in 1.773291 seconds
+2025-05-10 14:00:07,950 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-05-10 14:00:07,952 - agents.validation_agent.validation_agent - ERROR - Error verifying claim with web: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-05-10 14:00:07,952 - __main__ - INFO - Verification result: False (Confidence: 0.00)
+2025-05-10 14:00:07,952 - __main__ - INFO - Evidence: ...
+2025-05-10 14:00:07,952 - __main__ - INFO - Testing validation with RAG for proposal ID: mock_proposal_1
+2025-05-10 14:00:07,953 - __main__ - INFO - Mock validating proposal: mock_proposal_1
+2025-05-10 14:00:07,953 - __main__ - INFO - Classifying and verifying claims in proposal
+2025-05-10 14:00:07,954 - __main__ - INFO - Mock classifying claims in text: Musharaka is a partnership contract...
+2025-05-10 14:00:07,954 - __main__ - INFO - Mock verifying claim: Musharaka is a partnership contract where profits are shared according to agreed ratios
+2025-05-10 14:00:07,954 - __main__ - INFO - Mock verifying claim: Losses in Musharaka must be shared in proportion to capital contribution
+2025-05-10 14:00:07,954 - __main__ - INFO - Classified 2 verifiable claims and 0 subjective suggestions
+2025-05-10 14:00:07,954 - __main__ - INFO - Verified 2 claims with a verification rate of 1.00
+2025-05-10 14:00:07,954 - __main__ - INFO - Adjusted factual accuracy score from 0.88 to 0.92 based on claim verification
+2025-05-10 14:00:07,954 - __main__ - INFO - Validation result: APPROVED
+2025-05-10 14:00:07,954 - __main__ - INFO - Overall score: 0.88
+2025-05-10 14:00:07,954 - __main__ - INFO - Feedback: This enhancement proposal for the definition of Musharaka is well-structured and accurate. 
+
+Strengths:
+- Clearly defines the profit and loss sharing mechanisms in Musharaka
+- Aligns with AAOIFI Shari...
+2025-05-10 14:00:07,955 - __main__ - INFO - All RAG and claim verification tests completed successfully

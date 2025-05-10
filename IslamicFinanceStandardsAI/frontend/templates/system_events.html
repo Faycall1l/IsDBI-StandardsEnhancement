@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}System Events{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">System Events</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Event Bus Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if events %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Topic</th>
+                                        <th>Type</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                    <tr>
+                                        <td>{{ event.timestamp }}</td>
+                                        <td>{{ event.topic }}</td>
+                                        <td>{{ event.type }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#event-{{ loop.index }}" aria-expanded="false">
+                                                View
+                                            </button>
+                                            <div class="collapse mt-2" id="event-{{ loop.index }}">
+                                                <div class="card card-body">
+                                                    <pre class="mb-0"><code>{{ event.payload|tojson(indent=2) }}</code></pre>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No events recorded yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Audit Logs</h5>
+                </div>
+                <div class="card-body">
+                    {% if audit_logs %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Event Type</th>
+                                        <th>User</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                    <tr>
+                                        <td>{{ log.timestamp }}</td>
+                                        <td>{{ log.event_type }}</td>
+                                        <td>{{ log.user_id or 'System' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#log-{{ loop.index }}" aria-expanded="false">
+                                                View
+                                            </button>
+                                            <div class="collapse mt-2" id="log-{{ loop.index }}">
+                                                <div class="card card-body">
+                                                    <pre class="mb-0"><code>{{ log.data|tojson(indent=2) }}</code></pre>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No audit logs recorded yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">System Architecture</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Multi-Agent Architecture</h5>
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Document Agent
+                                    <span class="badge bg-primary rounded-pill">Active</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Enhancement Agent
+                                    <span class="badge bg-primary rounded-pill">Active</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Validation Agent
+                                    <span class="badge bg-primary rounded-pill">Active</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Core Components</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Knowledge Graph (Neo4j)
+                                    <span class="badge bg-success rounded-pill">Connected</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Event Bus (Kafka-like)
+                                    <span class="badge bg-success rounded-pill">Active</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Audit Logger (Hyperledger-like)
+                                    <span class="badge bg-success rounded-pill">Active</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

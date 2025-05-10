@@ -1,0 +1,96 @@
+    def generate_enhancement(self, standard_id, standard_text, use_web_search=True):
+        """Generate an enhancement for a standard
+        
+        Args:
+            standard_id (str): ID of the standard to enhance
+            standard_text (str): Text of the standard to enhance
+            use_web_search (bool): Whether to use web search for enhancement
+            
+        Returns:
+            dict: Enhancement result with proposal ID and other details
+        """
+        self.logger.info(f"Generating enhancement for standard: {standard_id}")
+        
+        try:
+            # Get standard from database if it exists
+            standard = self.shared_db.get_standard_by_id(standard_id)
+            if not standard and not standard_text:
+                self.logger.error(f"Standard not found: {standard_id}")
+                return {"success": False, "message": "Standard not found"}
+            
+            # Use enhancement generator to generate enhancement
+            try:
+                enhancement_result = self.enhancement_generator.generate_enhancement(
+                    standard_id, standard_text, use_web_search
+                )
+            except Exception as e:
+                self.logger.error(f"Error generating enhancement: {e}")
+                return {"success": False, "message": f"Error generating enhancement: {str(e)}"}
+            
+            # Generate a unique ID for the proposal
+            proposal_id = str(uuid.uuid4())
+            
+            # Prepare proposal data
+            proposal_data = {
+                "id": proposal_id,
+                "standard_id": standard_id,
+                "title": enhancement_result.get("title", "Enhancement Proposal"),
+                "description": enhancement_result.get("description", ""),
+                "proposed_text": enhancement_result.get("proposed_text", ""),
+                "rationale": enhancement_result.get("rationale", ""),
+                "status": "pending_validation",
+                "created_at": datetime.now().isoformat()
+            }
+            
+            # Create proposal in database
+            self.shared_db.create_enhancement_proposal(proposal_data)
+            
+            # Save to file system
+            enhancement_result["id"] = proposal_id
+            enhancement_result["standard_id"] = standard_id
+            self.file_manager.save_enhancement_proposal(proposal_id, enhancement_result)
+            
+            # Add proposal ID to result
+            enhancement_result["proposal_id"] = proposal_id
+            
+            # Publish event for enhancement generation
+            self.event_bus.publish_event({
+                "type": "enhancement_generated",
+                "topic": "enhancement",
+                "payload": {
+                    "standard_id": standard_id,
+                    "enhancement_id": proposal_id,
+                    "enhancement_data": proposal_data,
+                    "timestamp": datetime.now().isoformat()
+                }
+            })
+            
+            # Log the enhancement generation
+            self.audit_logger.log_event({
+                "event_type": "enhancement_generated",
+                "standard_id": standard_id,
+                "enhancement_id": proposal_id,
+                "user_id": "system",  # In a real system, this would be the actual user ID
+                "timestamp": datetime.now().isoformat(),
+                "details": {
+                    "title": proposal_data["title"],
+                    "use_web_search": use_web_search
+                }
+            })
+            
+            # Automatically trigger validation
+            self.validate_enhancement(proposal_id, enhancement_result)
+            
+            return {
+                "success": True,
+                "message": "Enhancement generated successfully",
+                "proposal_id": proposal_id,
+                **enhancement_result
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error in generate_enhancement: {str(e)}", exc_info=True)
+            return {
+                "success": False,
+                "message": f"Error generating enhancement: {str(e)}"
+            }

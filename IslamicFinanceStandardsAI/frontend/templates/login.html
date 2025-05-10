@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Login</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">Remember me</label>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Demo Accounts</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-danger">Admin</span></td>
+                                <td>admin@example.com</td>
+                                <td>admin123</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">Scholar</span></td>
+                                <td>scholar@example.com</td>
+                                <td>scholar123</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-info">Regulator</span></td>
+                                <td>regulator@example.com</td>
+                                <td>regulator123</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-secondary">Practitioner</span></td>
+                                <td>practitioner@example.com</td>
+                                <td>practitioner123</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-warning mb-0">
+                    <small>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        These are demo accounts for testing purposes only. In a production environment, these would not be displayed.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

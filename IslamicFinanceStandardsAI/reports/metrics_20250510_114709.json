@@ -1,0 +1,34 @@
+{
+  "system": {
+    "timestamp": "2025-05-10T11:47:11.467423",
+    "cpu": {
+      "percent": 25.5,
+      "count": 8
+    },
+    "memory": {
+      "percent_used": 84.2,
+      "available_mb": 1290.46875
+    },
+    "disk": {
+      "percent_used": 88.1,
+      "free_gb": 27.15439224243164
+    },
+    "network": {
+      "bytes_sent": 5650685952,
+      "bytes_recv": 3768773632
+    },
+    "process": {
+      "cpu_percent": 0.0,
+      "memory_mb": 323.40625
+    },
+    "uptime_seconds": 9.198396
+  },
+  "application": {},
+  "agents": {
+    "document_agent": {},
+    "enhancement_agent": {},
+    "validation_agent": {}
+  },
+  "database": {},
+  "api": {}
+}

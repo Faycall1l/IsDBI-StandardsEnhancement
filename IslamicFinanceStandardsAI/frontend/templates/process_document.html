@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Process Standard Document{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Process AAOIFI Standard Document</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('process_document') }}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="standard_id" class="form-label">Standard ID</label>
+                            <select class="form-select" id="standard_id" name="standard_id" required>
+                                <option value="" selected disabled>Select a standard</option>
+                                {% for standard in standards %}
+                                <option value="{{ standard.id }}">{{ standard.name }} ({{ standard.id }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="document_file" class="form-label">PDF Document</label>
+                            <input type="file" class="form-control" id="document_file" name="document_file" accept=".pdf" required>
+                            <div class="form-text">Upload the PDF document of the AAOIFI standard</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Process Document</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if show_result and result %}
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Document Processing Results</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h5>{{ result.message }}</h5>
+                        <p>Standard ID: {{ result.standard_id }}</p>
+                        <p>Document Path: {{ result.document_path }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">Extracted Data Summary</div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Definitions
+                                            <span class="badge bg-primary rounded-pill">{{ result.extracted_data_summary.definitions }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Accounting Treatments
+                                            <span class="badge bg-primary rounded-pill">{{ result.extracted_data_summary.accounting_treatments }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Transaction Structures
+                                            <span class="badge bg-primary rounded-pill">{{ result.extracted_data_summary.transaction_structures }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Ambiguities
+                                            <span class="badge bg-danger rounded-pill">{{ result.extracted_data_summary.ambiguities }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-warning text-dark">Identified Ambiguities</div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        {% for ambiguity in result.extracted_data.ambiguities %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">{{ ambiguity.text }}</h6>
+                                                <span class="badge {% if ambiguity.severity == 'high' %}bg-danger{% elif ambiguity.severity == 'medium' %}bg-warning text-dark{% else %}bg-info{% endif %}">{{ ambiguity.severity }}</span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion" id="extractedDataAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingDefinitions">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDefinitions" aria-expanded="false" aria-controls="collapseDefinitions">
+                                    Definitions ({{ result.extracted_data_summary.definitions }})
+                                </button>
+                            </h2>
+                            <div id="collapseDefinitions" class="accordion-collapse collapse" aria-labelledby="headingDefinitions" data-bs-parent="#extractedDataAccordion">
+                                <div class="accordion-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Term</th>
+                                                <th>Definition</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for definition in result.extracted_data.definitions %}
+                                            <tr>
+                                                <td><strong>{{ definition.term }}</strong></td>
+                                                <td>{{ definition.definition }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTreatments">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTreatments" aria-expanded="false" aria-controls="collapseTreatments">
+                                    Accounting Treatments ({{ result.extracted_data_summary.accounting_treatments }})
+                                </button>
+                            </h2>
+                            <div id="collapseTreatments" class="accordion-collapse collapse" aria-labelledby="headingTreatments" data-bs-parent="#extractedDataAccordion">
+                                <div class="accordion-body">
+                                    <div class="list-group">
+                                        {% for treatment in result.extracted_data.accounting_treatments %}
+                                        <div class="list-group-item">
+                                            <h5 class="mb-1">{{ treatment.title }}</h5>
+                                            <p class="mb-1">{{ treatment.text }}</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingStructures">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStructures" aria-expanded="false" aria-controls="collapseStructures">
+                                    Transaction Structures ({{ result.extracted_data_summary.transaction_structures }})
+                                </button>
+                            </h2>
+                            <div id="collapseStructures" class="accordion-collapse collapse" aria-labelledby="headingStructures" data-bs-parent="#extractedDataAccordion">
+                                <div class="accordion-body">
+                                    <div class="list-group">
+                                        {% for structure in result.extracted_data.transaction_structures %}
+                                        <div class="list-group-item">
+                                            <h5 class="mb-1">{{ structure.title }}</h5>
+                                            <p class="mb-1">{{ structure.description }}</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Recent Processing Events</h4>
+                </div>
+                <div class="card-body">
+                    {% if events %}
+                        <div class="list-group">
+                            {% for event in events %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ event.type }}</h5>
+                                        <small>{{ event.timestamp }}</small>
+                                    </div>
+                                    <p class="mb-1">Topic: {{ event.topic }}</p>
+                                    <p class="mb-1">Standard: {{ event.payload.standard_id }}</p>
+                                    <p class="mb-1">Document: {{ event.payload.document_path }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No recent processing events</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">What Happens When You Process a Document</h4>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>
+                            <strong>Document Agent</strong> processes the PDF and extracts:
+                            <ul>
+                                <li>Definitions</li>
+                                <li>Accounting Treatments</li>
+                                <li>Transaction Structures</li>
+                                <li>Ambiguities</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Knowledge Graph</strong> stores the extracted information
+                        </li>
+                        <li>
+                            <strong>Enhancement Agent</strong> automatically generates improvement proposals
+                        </li>
+                        <li>
+                            <strong>Validation Agent</strong> reviews proposals against Shariah principles
+                        </li>
+                        <li>
+                            <strong>Event Bus</strong> coordinates communication between agents
+                        </li>
+                        <li>
+                            <strong>Audit Logger</strong> records all actions in an immutable log
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

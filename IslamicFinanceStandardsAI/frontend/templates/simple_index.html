@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container">
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold">Islamic Finance Standards Enhancement Platform</h1>
+            <div class="mb-4">
+                <span class="badge bg-primary me-2">Community Collaboration</span>
+                <span class="badge bg-success me-2">Shariah Compliance</span>
+                <span class="badge bg-info">AI-Powered</span>
+            </div>
+            <div class="lead mb-4">
+                <p>
+                    Welcome to the Islamic Finance Standards Enhancement Platform, where scholars, practitioners, and regulators 
+                    collaborate to improve AAOIFI standards through a structured, transparent process.
+                </p>
+                <p>
+                    Our platform combines human expertise with AI-powered suggestions to propose meaningful enhancements 
+                    for AAOIFI standards, ensuring continuous improvement and adaptation to evolving market needs.
+                </p>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary me-md-2">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('proposals_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i> View Proposals
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <i class="fas fa-mosque fa-10x text-primary"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Top Proposals Section -->
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="border-bottom pb-2">Top-Rated Enhancement Proposals</h2>
+        </div>
+    </div>
+    <div class="row">
+        {% for proposal in top_proposals %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{ {'pending': 'warning', 'approved': 'success', 'rejected': 'danger', 'needs_revision': 'info'}[proposal.status] }}">{{ proposal.status|capitalize }}</span>
+                    <div>
+                        <span class="text-success"><i class="fas fa-thumbs-up"></i> {{ proposal.votes_up }}</span>
+                        <span class="text-danger ms-2"><i class="fas fa-thumbs-down"></i> {{ proposal.votes_down }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ proposal.title }}</h5>
+                    <p class="card-text small text-muted">{{ proposal.created_at }}</p>
+                    <p class="card-text">{{ proposal.rationale|truncate(100) }}</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('proposal_detail', proposal_id=proposal.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col text-center mt-3">
+            <a href="{{ url_for('proposals_list') }}" class="btn btn-primary">
+                <i class="fas fa-list me-2"></i> View All Proposals
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Section -->
+<div class="container py-5 bg-light rounded">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="border-bottom pb-2">Recent Community Activity</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="list-group">
+                {% for activity in recent_activities %}
+                <a href="{{ url_for('proposal_detail', proposal_id=activity.proposal_id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            {% if activity.type == 'comment' %}
+                            <i class="fas fa-comment text-primary me-2"></i>
+                            {% else %}
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            {% endif %}
+                            {{ activity.user }} {{ activity.type }}ed on "{{ activity.proposal_title }}"
+                        </h5>
+                        <small>{{ activity.created_at }}</small>
+                    </div>
+                    <p class="mb-1">{{ activity.text|truncate(100) }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h2 class="mb-4">How It Works</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-4 text-center">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5 class="card-title">1. Propose</h5>
+                    <p class="card-text">Submit enhancement proposals for existing AAOIFI standards, supported by AI-generated suggestions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4 text-center">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-3">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h5 class="card-title">2. Collaborate</h5>
+                    <p class="card-text">Discuss proposals through comments, suggestions, and structured feedback from diverse stakeholders.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4 text-center">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-3">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h5 class="card-title">3. Validate</h5>
+                    <p class="card-text">Scholars review and validate proposals for Shariah compliance and alignment with Islamic finance principles.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4 text-center">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-warning mb-3">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h5 class="card-title">4. Finalize</h5>
+                    <p class="card-text">Approved proposals are finalized and submitted to AAOIFI for consideration in future standard updates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

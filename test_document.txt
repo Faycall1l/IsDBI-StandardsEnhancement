@@ -1,0 +1,21 @@
+This is a test document for the Islamic Finance Standards Enhancement System.
+
+FAS 4 - Musharaka Financing
+
+Definition:
+Musharaka is a partnership between two or more parties where each partner contributes capital and participates in the work.
+
+Accounting Treatments:
+1. Initial Recognition: The partner's share in Musharaka capital should be recognized when payment is made or when capital is placed at the disposal of the Musharaka venture.
+2. Subsequent Measurement: The partner's share is measured at the end of the financial period at historical cost after accounting for any profit or loss.
+3. Profit Distribution: Profits are distributed according to the agreed ratio, while losses are distributed according to the capital contribution ratio.
+
+Transaction Structures:
+1. Diminishing Musharaka: A form of partnership where one partner gradually purchases the other partner's share over time.
+2. Constant Musharaka: A partnership where the partners' shares remain constant throughout the duration of the venture.
+
+Ambiguities:
+1. The standard does not clearly specify the treatment of losses in case of negligence.
+2. There is ambiguity in the profit distribution mechanism when one partner contributes both capital and labor.
+3. The standard lacks clarity on the valuation of non-monetary assets contributed as capital.
+4. The termination procedures in case of partner default are not well-defined.

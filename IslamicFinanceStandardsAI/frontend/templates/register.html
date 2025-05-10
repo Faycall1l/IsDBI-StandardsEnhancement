@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="practitioner">Practitioner</option>
+                            <option value="regulator">Regulator</option>
+                            <option value="scholar">Scholar</option>
+                        </select>
+                        <div class="form-text">
+                            <small>
+                                <i class="fas fa-info-circle me-1"></i>
+                                Scholar roles require approval by an administrator.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="organization" class="form-label">Organization (Optional)</label>
+                        <input type="text" class="form-control" id="organization" name="organization">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                        </label>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Register
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Islamic Finance Standards Enhancement Platform Terms of Use</h5>
+                <p>By registering for and using the Islamic Finance Standards Enhancement Platform, you agree to the following terms:</p>
+                
+                <h6>1. User Responsibilities</h6>
+                <p>Users agree to:</p>
+                <ul>
+                    <li>Provide accurate information during registration</li>
+                    <li>Maintain the confidentiality of their account credentials</li>
+                    <li>Use the platform in accordance with Shariah principles</li>
+                    <li>Contribute constructively to discussions and proposals</li>
+                    <li>Respect the opinions and contributions of other users</li>
+                </ul>
+                
+                <h6>2. Content Guidelines</h6>
+                <p>All content submitted to the platform must:</p>
+                <ul>
+                    <li>Be relevant to Islamic finance standards</li>
+                    <li>Be respectful and professional in tone</li>
+                    <li>Not violate any applicable laws or regulations</li>
+                    <li>Not infringe on intellectual property rights</li>
+                    <li>Not contain offensive, discriminatory, or inappropriate material</li>
+                </ul>
+                
+                <h6>3. Intellectual Property</h6>
+                <p>By submitting content to the platform, you grant IsDBI a non-exclusive, worldwide, royalty-free license to use, reproduce, modify, and distribute the content for the purpose of improving Islamic finance standards.</p>
+                
+                <h6>4. Privacy</h6>
+                <p>IsDBI will collect and process user data in accordance with its Privacy Policy. By using the platform, you consent to the collection and processing of your data as described in the Privacy Policy.</p>
+                
+                <h6>5. Termination</h6>
+                <p>IsDBI reserves the right to terminate or suspend user accounts that violate these terms or engage in inappropriate behavior on the platform.</p>
+                
+                <h6>6. Modifications</h6>
+                <p>IsDBI may modify these terms at any time. Continued use of the platform after such modifications constitutes acceptance of the modified terms.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

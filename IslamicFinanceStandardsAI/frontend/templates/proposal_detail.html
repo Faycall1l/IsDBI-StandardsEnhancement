@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block title %}{{ proposal.properties.title }} - Islamic Finance Standards Enhancement{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Main Proposal Content -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ proposal.properties.title }}</h4>
+                <span class="badge {% if proposal.properties.status == 'pending' %}bg-warning{% elif proposal.properties.status == 'approved' %}bg-success{% elif proposal.properties.status == 'rejected' %}bg-danger{% elif proposal.properties.status == 'needs_revision' %}bg-info{% else %}bg-secondary{% endif %}">
+                    {{ proposal.properties.status|capitalize }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Standard Reference</h5>
+                    <p class="mb-1">
+                        <strong>Standard:</strong> {{ proposal.properties.standard_id }}
+                    </p>
+                    <p class="mb-1">
+                        <strong>Section:</strong> {{ proposal.properties.section }}
+                    </p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Current Text</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ proposal.properties.current_text }}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Proposed Enhancement</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ proposal.properties.proposed_text }}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Rationale</h5>
+                    <p>{{ proposal.properties.rationale }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Impact Analysis</h5>
+                    <p>{{ proposal.properties.impact_analysis }}</p>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i> {{ proposal.properties.timestamp }}
+                        </small>
+                    </div>
+                    <div class="d-flex">
+                        <form method="POST" action="{{ url_for('vote_proposal', proposal_id=proposal.id) }}" class="me-2">
+                            <input type="hidden" name="vote_type" value="upvote">
+                            <button type="submit" class="btn btn-outline-success" {% if proposal.properties.status != 'pending' %}disabled{% endif %}>
+                                <i class="fas fa-arrow-up me-1"></i> Upvote ({{ proposal.votes.upvotes }})
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('vote_proposal', proposal_id=proposal.id) }}">
+                            <input type="hidden" name="vote_type" value="downvote">
+                            <button type="submit" class="btn btn-outline-danger" {% if proposal.properties.status != 'pending' %}disabled{% endif %}>
+                                <i class="fas fa-arrow-down me-1"></i> Downvote ({{ proposal.votes.downvotes }})
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Validation Results -->
+        {% if validation_results %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Validation Results</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for result in validation_results %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">
+                            {% if result.properties.is_shariah_compliant %}
+                            <span class="badge bg-success me-2">Shariah Compliant</span>
+                            {% else %}
+                            <span class="badge bg-danger me-2">Non-Compliant</span>
+                            {% endif %}
+                            Validation Result
+                        </h6>
+                        <small class="text-muted">{{ result.properties.timestamp }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Feedback</h6>
+                        <p>{{ result.properties.feedback }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Improvement Suggestions</h6>
+                        <p>{{ result.properties.improvement_suggestions }}</p>
+                    </div>
+                    <div>
+                        <h6>References</h6>
+                        <ul>
+                            {% for reference in result.properties.references %}
+                            <li>{{ reference }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Comments Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Comments ({{ comments|length }})</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="fw-bold">{{ comment.user.name }}</span>
+                                <span class="badge {% if comment.user.role == 'admin' %}bg-danger{% elif comment.user.role == 'scholar' %}bg-success{% elif comment.user.role == 'regulator' %}bg-info{% else %}bg-secondary{% endif %} ms-2">
+                                    {{ comment.user.role|capitalize }}
+                                </span>
+                            </div>
+                            <small class="text-muted">{{ comment.timestamp }}</small>
+                        </div>
+                        <p class="mb-0">{{ comment.text }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="list-group-item text-center py-4">
+                        <p class="text-muted mb-0">No comments yet. Be the first to comment!</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('comment_proposal', proposal_id=proposal.id) }}">
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Add a Comment</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-comment me-2"></i> Submit Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Suggestions Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Improvement Suggestions</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% if suggestions %}
+                    {% for suggestion in suggestions %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="fw-bold">{{ suggestion.user.name }}</span>
+                                <span class="badge {% if suggestion.user.role == 'admin' %}bg-danger{% elif suggestion.user.role == 'scholar' %}bg-success{% elif suggestion.user.role == 'regulator' %}bg-info{% else %}bg-secondary{% endif %} ms-2">
+                                    {{ suggestion.user.role|capitalize }}
+                                </span>
+                                <span class="badge {% if suggestion.status == 'pending' %}bg-warning{% elif suggestion.status == 'accepted' %}bg-success{% elif suggestion.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %} ms-2">
+                                    {{ suggestion.status|capitalize }}
+                                </span>
+                            </div>
+                            <small class="text-muted">{{ suggestion.timestamp }}</small>
+                        </div>
+                        <p class="mb-0">{{ suggestion.text }}</p>
+                        
+                        {% if current_user.role.value in ['admin', 'scholar'] and suggestion.status == 'pending' %}
+                        <div class="mt-2 d-flex">
+                            <form method="POST" action="{{ url_for('update_suggestion_status', suggestion_id=suggestion.id) }}" class="me-2">
+                                <input type="hidden" name="status" value="accepted">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check me-1"></i> Accept
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('update_suggestion_status', suggestion_id=suggestion.id) }}">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times me-1"></i> Reject
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="list-group-item text-center py-4">
+                        <p class="text-muted mb-0">No improvement suggestions yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('suggest_improvement', proposal_id=proposal.id) }}">
+                    <div class="mb-3">
+                        <label for="suggestion" class="form-label">Suggest an Improvement</label>
+                        <textarea class="form-control" id="suggestion" name="suggestion" rows="3" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-lightbulb me-2"></i> Submit Suggestion
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Status Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Proposal Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="progress">
+                        {% if proposal.properties.status == 'pending' %}
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                        {% elif proposal.properties.status == 'needs_revision' %}
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                        {% elif proposal.properties.status == 'approved' %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                        {% elif proposal.properties.status == 'rejected' %}
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Rejected</div>
+                        {% else %}
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="text-center">
+                        <div class="bg-light rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                        </div>
+                        <p class="small mt-1 mb-0">Proposed</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-light rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-comment-dots text-info"></i>
+                        </div>
+                        <p class="small mt-1 mb-0">Feedback</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-light rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <p class="small mt-1 mb-0">Approved</p>
+                    </div>
+                </div>
+                
+                {% if current_user.role.value in ['admin', 'scholar'] %}
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Update Status</h6>
+                        <form method="POST" action="{{ url_for('update_proposal_status', proposal_id=proposal.id) }}">
+                            <div class="mb-3">
+                                <select class="form-select" name="status" required>
+                                    <option value="pending" {% if proposal.properties.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="needs_revision" {% if proposal.properties.status == 'needs_revision' %}selected{% endif %}>Needs Revision</option>
+                                    <option value="approved" {% if proposal.properties.status == 'approved' %}selected{% endif %}>Approved</option>
+                                    <option value="rejected" {% if proposal.properties.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Related Standards -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Related Standards</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ proposal.properties.standard_id }}</h6>
+                    </div>
+                    <p class="mb-1">Main standard being enhanced</p>
+                </a>
+                {% if related_standards %}
+                    {% for standard in related_standards %}
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ standard.properties.standard_id }}</h6>
+                        </div>
+                        <p class="mb-1">{{ standard.properties.title }}</p>
+                    </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Voting Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Voting Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Overall Score: {{ proposal.votes.score }}</h6>
+                    <div class="progress">
+                        {% set total_votes = proposal.votes.upvotes + proposal.votes.downvotes %}
+                        {% set upvote_percentage = (proposal.votes.upvotes / total_votes * 100) if total_votes > 0 else 0 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ upvote_percentage }}%;" aria-valuenow="{{ upvote_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ proposal.votes.upvotes }}</div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ 100 - upvote_percentage }}%;" aria-valuenow="{{ 100 - upvote_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ proposal.votes.downvotes }}</div>
+                    </div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="p-3">
+                            <h5 class="text-success mb-0">{{ proposal.votes.upvotes }}</h5>
+                            <small class="text-muted">Upvotes</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3">
+                            <h5 class="text-danger mb-0">{{ proposal.votes.downvotes }}</h5>
+                            <small class="text-muted">Downvotes</small>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if vote_breakdown %}
+                <h6 class="mt-3">Votes by Role</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Upvotes</th>
+                                <th>Downvotes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Scholars</td>
+                                <td>{{ vote_breakdown.scholar.upvotes }}</td>
+                                <td>{{ vote_breakdown.scholar.downvotes }}</td>
+                            </tr>
+                            <tr>
+                                <td>Regulators</td>
+                                <td>{{ vote_breakdown.regulator.upvotes }}</td>
+                                <td>{{ vote_breakdown.regulator.downvotes }}</td>
+                            </tr>
+                            <tr>
+                                <td>Practitioners</td>
+                                <td>{{ vote_breakdown.practitioner.upvotes }}</td>
+                                <td>{{ vote_breakdown.practitioner.downvotes }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Share Proposal -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Share Proposal</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="proposalUrl" value="{{ request.url }}" readonly>
+                    <button class="btn btn-outline-secondary" type="button" id="copyUrlBtn">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Copy URL functionality
+        const copyUrlBtn = document.getElementById('copyUrlBtn');
+        const proposalUrl = document.getElementById('proposalUrl');
+        
+        copyUrlBtn.addEventListener('click', function() {
+            proposalUrl.select();
+            document.execCommand('copy');
+            
+            // Show tooltip or feedback
+            copyUrlBtn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(function() {
+                copyUrlBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}
