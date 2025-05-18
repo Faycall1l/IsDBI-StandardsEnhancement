@@ -1,0 +1,69 @@
+{
+  "system": {
+    "name": "Islamic Finance Standards Enhancement System",
+    "version": "1.0.0",
+    "description": "Autonomous multi-agent system for enhancing Islamic finance standards"
+  },
+  "teams": {
+    "document_team_size": 3,
+    "enhancement_team_size": 3,
+    "validation_team_size": 3,
+    "blockchain_team_size": 1
+  },
+  "monitoring": {
+    "monitoring_dir": "monitoring",
+    "file_check_interval": 10,
+    "api_check_interval": 3600,
+    "web_check_interval": 86400,
+    "api_endpoints": [
+      {
+        "name": "AAOIFI API",
+        "url": "https://api.aaoifi.com/standards/updates",
+        "auth_required": true,
+        "auth_type": "api_key"
+      },
+      {
+        "name": "IFSB API",
+        "url": "https://api.ifsb.org/standards/updates",
+        "auth_required": true,
+        "auth_type": "api_key"
+      }
+    ],
+    "web_sources": [
+      {
+        "name": "AAOIFI Website",
+        "url": "https://aaoifi.com/standards/",
+        "selector": ".standards-updates"
+      },
+      {
+        "name": "IFSB Website",
+        "url": "https://www.ifsb.org/published.php",
+        "selector": ".standards-list"
+      }
+    ]
+  },
+  "knowledge_graph": {
+    "uri": "bolt://localhost:7687",
+    "username": "neo4j",
+    "password": "password",
+    "max_pool_size": 50,
+    "connection_timeout": 60
+  },
+  "rag": {
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "chunk_size": 1000,
+    "chunk_overlap": 200,
+    "similarity_top_k": 5
+  },
+  "standards": {
+    "focus": [
+      "FAS28_Murabaha",
+      "FAS7_Salam"
+    ]
+  },
+  "logging": {
+    "level": "INFO",
+    "file_rotation": "daily",
+    "retention": 30
+  }
+}

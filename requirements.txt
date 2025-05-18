@@ -1,0 +1,47 @@
+# Core dependencies
+python-dotenv>=1.1.0
+numpy>=2.2.5
+pandas>=2.2.3
+scikit-learn>=1.6.1
+tqdm>=4.67.1
+
+# Neural network and embeddings
+torch>=2.7.0
+faiss-cpu>=1.11.0
+sentence-transformers>=4.1.0
+transformers>=4.51.3
+
+# Language models and AI
+google-generativeai>=0.8.5
+langchain>=0.3.25
+langchain-community>=0.3.24
+langchain-core>=0.3.60
+
+# Database
+neo4j>=5.28.1
+chromadb>=1.0.9
+
+# Web and parsing
+beautifulsoup4>=4.10.0
+lxml>=4.6.3
+requests>=2.32.3
+httpx>=0.28.1
+
+# Text processing
+spacy>=3.1.3
+nltk>=3.6.3
+PyPDF2>=2.10.0
+pdfplumber>=0.7.0
+
+# Web framework
+fastapi>=0.115.9
+uvicorn>=0.34.2
+
+# Testing
+pytest>=6.2.5
+
+# Utilities
+pytz>=2025.2
+cryptography>=39.0.0
+colorama>=0.4.4
+reportlab>=3.6.0

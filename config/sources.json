@@ -1,0 +1,95 @@
+{
+  "news": [
+    {
+      "id": "islamic_finance_news",
+      "name": "Islamic Finance News",
+      "url": "https://www.islamicfinancenews.com/feed",
+      "type": "rss"
+    },
+    {
+      "id": "aaoifi_news",
+      "name": "AAOIFI News",
+      "url": "https://aaoifi.com/news/",
+      "type": "web",
+      "article_selector": ".news-item",
+      "title_selector": "h3",
+      "link_selector": "a.read-more",
+      "summary_selector": "p.excerpt"
+    },
+    {
+      "id": "ifsb_news",
+      "name": "IFSB News",
+      "url": "https://www.ifsb.org/press.php",
+      "type": "web",
+      "article_selector": ".press-release-item",
+      "title_selector": "h4",
+      "link_selector": "a",
+      "summary_selector": "p"
+    }
+  ],
+  "scholarly": [
+    {
+      "id": "islamic_economics_journal",
+      "name": "Journal of Islamic Economics",
+      "url": "https://journal.uii.ac.id/JIElariba/gateway/plugin/WebFeedGatewayPlugin/rss2",
+      "type": "rss"
+    },
+    {
+      "id": "islamic_finance_review",
+      "name": "Islamic Finance Review",
+      "url": "https://api.semanticscholar.org/graph/v1/paper/search",
+      "type": "api",
+      "params": {
+        "fields": "title,abstract,authors,year,url",
+        "limit": 10
+      }
+    }
+  ],
+  "regulatory": [
+    {
+      "id": "aaoifi_standards",
+      "name": "AAOIFI Standards Updates",
+      "url": "https://aaoifi.com/standards-under-development/",
+      "type": "web",
+      "update_selector": ".standard-update",
+      "title_selector": "h3",
+      "link_selector": "a",
+      "date_selector": ".date",
+      "content_selector": ".content"
+    },
+    {
+      "id": "ifsb_standards",
+      "name": "IFSB Standards",
+      "url": "https://www.ifsb.org/published.php",
+      "type": "web",
+      "update_selector": ".standard-item",
+      "title_selector": "h4",
+      "link_selector": "a",
+      "date_selector": ".date",
+      "content_selector": "p"
+    }
+  ],
+  "fatwas": [
+    {
+      "id": "islamic_fiqh_academy",
+      "name": "Islamic Fiqh Academy",
+      "url": "https://iifa-aifi.org/en/fatawa",
+      "type": "web",
+      "update_selector": ".fatwa-item",
+      "title_selector": "h3",
+      "link_selector": "a",
+      "date_selector": ".date",
+      "content_selector": ".content"
+    },
+    {
+      "id": "dar_al_ifta",
+      "name": "Dar Al-Ifta Al-Missriyyah",
+      "url": "https://www.dar-alifta.org/Foreign/ViewFatwa.aspx?ID=",
+      "type": "api",
+      "params": {
+        "category": "economic",
+        "limit": 10
+      }
+    }
+  ]
+}
